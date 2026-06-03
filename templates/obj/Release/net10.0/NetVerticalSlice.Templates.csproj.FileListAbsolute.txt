@@ -1,0 +1,11 @@
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\bin\Release\net10.0\NetVerticalSlice.Templates.deps.json
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\bin\Release\net10.0\NetVerticalSlice.Templates.dll
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\bin\Release\net10.0\NetVerticalSlice.Templates.pdb
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.AssemblyInfoInputs.cache
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.AssemblyInfo.cs
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.csproj.CoreCompileInputs.cache
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.dll
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\refint\NetVerticalSlice.Templates.dll
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\NetVerticalSlice.Templates.pdb
+C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\obj\Release\net10.0\ref\NetVerticalSlice.Templates.dll

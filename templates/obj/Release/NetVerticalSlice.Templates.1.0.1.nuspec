@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>NetVerticalSlice.Templates</id>
+    <version>1.0.1</version>
+    <authors>net-vertical-slice</authors>
+    <readme>README.md</readme>
+    <description>Project templates for Net Vertical Slice architecture, including the Wolverine VSA Web API template.</description>
+    <tags>dotnet-new template webapi vsa wolverine cqrs</tags>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+    <repository type="git" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.template.config\ide.host.json" target="content\vsa-webapi\.template.config\ide.host.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.template.config\ide\icon.ico" target="content\vsa-webapi\.template.config\ide\icon.ico" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.template.config\template.json" target="content\vsa-webapi\.template.config\template.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.metadata.v10.bin" target="content\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.metadata.v10.bin" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.projects.v10.bin" target="content\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.projects.v10.bin" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.strings.v10.bin" target="content\vsa-webapi\.vs\ProjectEvaluation\vsa-webapi.strings.v10.bin" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\DesignTimeBuild\.dtbcache.v2" target="content\vsa-webapi\.vs\vsa-webapi\DesignTimeBuild\.dtbcache.v2" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\FileContentIndex\29a6ac10-2543-4edc-9445-5e3e7cd7107d.vsidx" target="content\vsa-webapi\.vs\vsa-webapi\FileContentIndex\29a6ac10-2543-4edc-9445-5e3e7cd7107d.vsidx" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\v18\.futdcache.v2" target="content\vsa-webapi\.vs\vsa-webapi\v18\.futdcache.v2" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\v18\.suo" target="content\vsa-webapi\.vs\vsa-webapi\v18\.suo" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\v18\DocumentLayout.backup.json" target="content\vsa-webapi\.vs\vsa-webapi\v18\DocumentLayout.backup.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\.vs\vsa-webapi\v18\DocumentLayout.json" target="content\vsa-webapi\.vs\vsa-webapi\v18\DocumentLayout.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\appsettings.Development.json" target="content\vsa-webapi\appsettings.Development.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\appsettings.json" target="content\vsa-webapi\appsettings.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Data\AppDbContext.cs" target="content\vsa-webapi\Data\AppDbContext.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Data\Common\BaseEntity.cs" target="content\vsa-webapi\Data\Common\BaseEntity.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Data\Configuration\SampleConfiguration.cs" target="content\vsa-webapi\Data\Configuration\SampleConfiguration.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Data\Entities\Sample.cs" target="content\vsa-webapi\Data\Entities\Sample.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Extensions\GlobalExceptionHandler.cs" target="content\vsa-webapi\Extensions\GlobalExceptionHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Extensions\QueryableExtensions.cs" target="content\vsa-webapi\Extensions\QueryableExtensions.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleCommand.cs" target="content\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleCommand.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleEndpoint.cs" target="content\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleEndpoint.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleHandler.cs" target="content\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleValidator.cs" target="content\vsa-webapi\Features\SampleFeature\CreateSample\CreateSampleValidator.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleEndpoint.cs" target="content\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleEndpoint.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleHandler.cs" target="content\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleQuery.cs" target="content\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleQuery.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleViewModel.cs" target="content\vsa-webapi\Features\SampleFeature\GetByIdSample\GetByIdSampleViewModel.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleEndpoint.cs" target="content\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleEndpoint.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleHandler.cs" target="content\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleQuery.cs" target="content\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleQuery.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleViewModel.cs" target="content\vsa-webapi\Features\SampleFeature\GetListSample\GetListSampleViewModel.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleCommand.cs" target="content\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleCommand.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleEndpoint.cs" target="content\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleEndpoint.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleHandler.cs" target="content\vsa-webapi\Features\SampleFeature\SoftDeleteSample\SoftDeleteSampleHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleCommand.cs" target="content\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleCommand.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleEndpoint.cs" target="content\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleEndpoint.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleHandler.cs" target="content\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleHandler.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleValidator.cs" target="content\vsa-webapi\Features\SampleFeature\UpdateSample\UpdateSampleValidator.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Error.cs" target="content\vsa-webapi\Infrastructure\Common\Error.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Exceptions\DomainException.cs" target="content\vsa-webapi\Infrastructure\Common\Exceptions\DomainException.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Exceptions\ForbiddenException.cs" target="content\vsa-webapi\Infrastructure\Common\Exceptions\ForbiddenException.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Exceptions\NotFoundException.cs" target="content\vsa-webapi\Infrastructure\Common\Exceptions\NotFoundException.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\PagedList.cs" target="content\vsa-webapi\Infrastructure\Common\PagedList.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Response.cs" target="content\vsa-webapi\Infrastructure\Common\Response.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Infrastructure\Common\Result.cs" target="content\vsa-webapi\Infrastructure\Common\Result.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Mappings\SampleMappingConfig.cs" target="content\vsa-webapi\Mappings\SampleMappingConfig.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Program.cs" target="content\vsa-webapi\Program.cs" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\Properties\launchSettings.json" target="content\vsa-webapi\Properties\launchSettings.json" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\README.md" target="content\vsa-webapi\README.md" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\SKILL.md" target="content\vsa-webapi\SKILL.md" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\vsa-webapi.sln" target="content\vsa-webapi\vsa-webapi.sln" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\vsa-webapi\VsaTemplate.csproj" target="content\vsa-webapi\VsaTemplate.csproj" />
+    <file src="C:\Users\SAAD\.agent\skills\net-vertical-slice\templates\README.md" target="\README.md" />
+  </files>
+</package>

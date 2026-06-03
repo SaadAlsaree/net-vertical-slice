@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "net-vertical-slice",
+  "classifications": ["Web", "WebAPI", "API", "Wolverine", "CQRS", "VSA"],
+  "identity": "NetVerticalSlice.WebApi",
+  "name": "Wolverine VSA Web API",
+  "shortName": "vsa-webapi",
+  "description": "Creates a new ASP.NET Core Web API project pre-configured with Wolverine CQRS, Vertical Slice Architecture, EF Core, FluentValidation, and Mapster. Includes all infrastructure boilerplate (Response<T>, Result<T>, Error, PagedList<T>, BaseEntity, GlobalExceptionHandler) and a sample feature.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "VsaTemplate",
+  "preferNameDirectory": true,
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "net10.0", "description": ".NET 10" },
+        { "choice": "net9.0", "description": ".NET 9" }
+      ],
+      "defaultValue": "net10.0",
+      "replaces": "net10.0"
+    },
+    "DbProvider": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "PostgreSQL", "description": "Npgsql PostgreSQL" },
+        { "choice": "SqlServer", "description": "Microsoft SQL Server" },
+        { "choice": "Sqlite", "description": "SQLite" }
+      ],
+      "defaultValue": "PostgreSQL",
+      "description": "Database provider",
+      "replaces": "__DB_PROVIDER__"
+    },
+    "ApiDocsTool": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "Scalar", "description": "Scalar API documentation" },
+        { "choice": "Swagger", "description": "Swagger / Swashbuckle" }
+      ],
+      "defaultValue": "Scalar",
+      "description": "API documentation tool",
+      "replaces": "__APIDOCS_TOOL__"
+    },
+    "CacheTool": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "OutputCache", "description": "Enable ASP.NET Core output caching middleware" },
+        { "choice": "None", "description": "Disable output caching" }
+      ],
+      "defaultValue": "OutputCache",
+      "description": "Caching option",
+      "replaces": "__CACHE_TOOL__"
+    },
+    "DB_SQLSERVER": {
+      "type": "computed",
+      "value": "(DbProvider == \"SqlServer\")"
+    },
+    "DB_SQLITE": {
+      "type": "computed",
+      "value": "(DbProvider == \"Sqlite\")"
+    },
+    "APIDOCS_SWAGGER": {
+      "type": "computed",
+      "value": "(ApiDocsTool == \"Swagger\")"
+    },
+    "APIDOCS_SCALAR": {
+      "type": "computed",
+      "value": "(ApiDocsTool == \"Scalar\")"
+    },
+    "CACHE_OUTPUT": {
+      "type": "computed",
+      "value": "(CacheTool == \"OutputCache\")"
+    },
+    "ApiDocsLaunchUrl": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "__APIDOCS_LAUNCH_URL__",
+      "parameters": {
+        "cases": [
+          {
+            "condition": "(ApiDocsTool == \"Swagger\")",
+            "value": "swagger"
+          },
+          {
+            "condition": "(ApiDocsTool == \"Scalar\")",
+            "value": "scalar/v1"
+          }
+        ]
+      }
+    },
+    "ApiDocsLaunchBrowser": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "\"launchBrowser\": false",
+      "parameters": {
+        "cases": [
+          {
+            "condition": "(ApiDocsTool == \"Swagger\")",
+            "value": "\"launchBrowser\": true"
+          },
+          {
+            "condition": "(ApiDocsTool == \"Scalar\")",
+            "value": "\"launchBrowser\": true"
+          }
+        ]
+      }
+    },
+    "DefaultConnectionString": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "__CONNECTION_STRING__",
+      "parameters": {
+        "cases": [
+          {
+            "condition": "(DbProvider == \"PostgreSQL\")",
+            "value": "Host=localhost;Port=5432;Database=vsatemplate_db;Username=postgres;Password=postgres"
+          },
+          {
+            "condition": "(DbProvider == \"SqlServer\")",
+            "value": "Server=localhost,1433;Database=vsatemplate_db;User Id=sa;Password=Your_password123;TrustServerCertificate=True"
+          },
+          {
+            "condition": "(DbProvider == \"Sqlite\")",
+            "value": "Data Source=vsatemplate.db"
+          }
+        ]
+      }
+    },
+    "DevelopmentConnectionString": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "__DEV_CONNECTION_STRING__",
+      "parameters": {
+        "cases": [
+          {
+            "condition": "(DbProvider == \"PostgreSQL\")",
+            "value": "Host=localhost;Port=5432;Database=vsatemplate_dev;Username=postgres;Password=postgres"
+          },
+          {
+            "condition": "(DbProvider == \"SqlServer\")",
+            "value": "Server=localhost,1433;Database=vsatemplate_dev;User Id=sa;Password=Your_password123;TrustServerCertificate=True"
+          },
+          {
+            "condition": "(DbProvider == \"Sqlite\")",
+            "value": "Data Source=vsatemplate_dev.db"
+          }
+        ]
+      }
+    }
+  },
+  "primaryOutputs": [
+    { "path": "VsaTemplate.csproj" }
+  ],
+  "postActions": [
+    {
+      "description": "Restore NuGet packages",
+      "manualInstructions": [
+        { "text": "Run 'dotnet restore'" }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

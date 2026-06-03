@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "net-vertical-slice",
+  "classifications": ["Common", "Code", "Wolverine", "CQRS", "VSA"],
+  "identity": "NetVerticalSlice.Feature",
+  "name": "Wolverine VSA Feature",
+  "shortName": "vsa-feature",
+  "description": "Generates a full Vertical Slice Architecture feature with Wolverine CQRS: Entity, EF Configuration, CRUD slices (Create, GetById, GetList, Update, SoftDelete), Mapping config, and Validators.",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "sourceName": "__Entity__",
+  "symbols": {
+    "Category": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Core",
+      "replaces": "__Category__",
+      "description": "Entity category subfolder under Data/Entities/ (e.g., Catalog, Identity, Core). Used in namespaces — move the generated entity file to the matching folder."
+    },
+    "RootNamespace": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "MyApp",
+      "replaces": "__RootNamespace__",
+      "description": "Project root namespace (e.g., MyApp, MyCompany.Api)"
+    },
+    "DbContext": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "AppDbContext",
+      "replaces": "__DbContext__",
+      "description": "DbContext class name (e.g., AppDbContext, ShopDbContext)"
+    },
+    "ResourceName": {
+      "type": "parameter",
+      "datatype": "string",
+      "isRequired": true,
+      "replaces": "__resource__",
+      "description": "API resource name in kebab-case for URL paths (e.g., products, order-items)"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "Data/Entities/__Entity__.cs" },
+    { "path": "Data/Configuration/__Entity__Configuration.cs" },
+    { "path": "Features/__Entity__Feature/Create__Entity__/Create__Entity__Command.cs" },
+    { "path": "Features/__Entity__Feature/Create__Entity__/Create__Entity__Handler.cs" },
+    { "path": "Features/__Entity__Feature/Create__Entity__/Create__Entity__Endpoint.cs" },
+    { "path": "Features/__Entity__Feature/Create__Entity__/Create__Entity__Validator.cs" },
+    { "path": "Features/__Entity__Feature/GetById__Entity__/GetById__Entity__Query.cs" },
+    { "path": "Features/__Entity__Feature/GetById__Entity__/GetById__Entity__Handler.cs" },
+    { "path": "Features/__Entity__Feature/GetById__Entity__/GetById__Entity__Endpoint.cs" },
+    { "path": "Features/__Entity__Feature/GetById__Entity__/GetById__Entity__ViewModel.cs" },
+    { "path": "Features/__Entity__Feature/GetList__Entity__/GetList__Entity__Query.cs" },
+    { "path": "Features/__Entity__Feature/GetList__Entity__/GetList__Entity__Handler.cs" },
+    { "path": "Features/__Entity__Feature/GetList__Entity__/GetList__Entity__Endpoint.cs" },
+    { "path": "Features/__Entity__Feature/GetList__Entity__/GetList__Entity__ViewModel.cs" },
+    { "path": "Features/__Entity__Feature/Update__Entity__/Update__Entity__Command.cs" },
+    { "path": "Features/__Entity__Feature/Update__Entity__/Update__Entity__Handler.cs" },
+    { "path": "Features/__Entity__Feature/Update__Entity__/Update__Entity__Endpoint.cs" },
+    { "path": "Features/__Entity__Feature/Update__Entity__/Update__Entity__Validator.cs" },
+    { "path": "Features/__Entity__Feature/SoftDelete__Entity__/SoftDelete__Entity__Command.cs" },
+    { "path": "Features/__Entity__Feature/SoftDelete__Entity__/SoftDelete__Entity__Handler.cs" },
+    { "path": "Features/__Entity__Feature/SoftDelete__Entity__/SoftDelete__Entity__Endpoint.cs" },
+    { "path": "Mappings/__Entity__MappingConfig.cs" }
+  ],
+  "postActions": [
+    {
+      "condition": "(HostIdentifier != \"dotnetcli\")",
+      "description": "Manual steps to complete the feature",
+      "manualInstructions": [
+        {
+          "text": "1. Move the entity file to the appropriate category folder:\n     Move Data/Entities/{Entity}.cs → Data/Entities/{Category}/{Entity}.cs\n\n2. Add the DbSet property to your DbContext:\n     public DbSet<{Entity}> {Entities} { get; set; }\n\n3. Create and apply the migration:\n     dotnet ef migrations add Add{Entity}\n     dotnet ef database update\n\n4. Adjust the DbSet property name if the plural is irregular (e.g., Categories not Categorys)."
+        }
+      ],
+      "actionId": "3A7C4B45-1F5D-4C42-8D8E-8FA9D2C5BD1F",
+      "continueOnError": true
+    }
+  ]
+}

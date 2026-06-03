@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json.schemastore.org/ide.host",
+  "order": 200,
+  "icon": "ide/icon.ico",
+  "symbolInfo": [
+    {
+      "id": "DbProvider",
+      "name": {
+        "text": "Database Type"
+      },
+      "description": {
+        "text": "Choose the database provider used by Entity Framework Core."
+      },
+      "isVisible": true,
+      "choices": [
+        {
+          "id": "PostgreSQL",
+          "name": {
+            "text": "PostgreSQL"
+          },
+          "description": {
+            "text": "Use Npgsql for PostgreSQL."
+          }
+        },
+        {
+          "id": "SqlServer",
+          "name": {
+            "text": "SQL Server"
+          },
+          "description": {
+            "text": "Use Microsoft SQL Server provider."
+          }
+        },
+        {
+          "id": "Sqlite",
+          "name": {
+            "text": "SQLite"
+          },
+          "description": {
+            "text": "Use SQLite for local or lightweight storage."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ApiDocsTool",
+      "name": {
+        "text": "Post Type"
+      },
+      "description": {
+        "text": "Choose which API docs UI to generate."
+      },
+      "isVisible": true,
+      "choices": [
+        {
+          "id": "Swagger",
+          "name": {
+            "text": "Swagger"
+          },
+          "description": {
+            "text": "Generate Swagger UI with Swashbuckle."
+          }
+        },
+        {
+          "id": "Scalar",
+          "name": {
+            "text": "Scalar"
+          },
+          "description": {
+            "text": "Generate Scalar API Reference UI."
+          }
+        }
+      ]
+    },
+    {
+      "id": "CacheTool",
+      "name": {
+        "text": "Caching"
+      },
+      "description": {
+        "text": "Choose whether to enable output caching middleware."
+      },
+      "isVisible": true,
+      "choices": [
+        {
+          "id": "OutputCache",
+          "name": {
+            "text": "Output Cache"
+          },
+          "description": {
+            "text": "Enable ASP.NET Core output caching for GET endpoints."
+          }
+        },
+        {
+          "id": "None",
+          "name": {
+            "text": "No Cache"
+          },
+          "description": {
+            "text": "Do not configure output caching middleware."
+          }
+        }
+      ]
+    }
+  ]
+}

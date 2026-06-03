@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <PackageType>Template</PackageType>
+    <PackageId>NetVerticalSlice.Templates</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>net-vertical-slice</Authors>
+    <Description>Project templates for Net Vertical Slice architecture, including the Wolverine VSA Web API template.</Description>
+    <PackageTags>dotnet-new;template;webapi;vsa;wolverine;cqrs</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="vsa-webapi\**\*"
+             Exclude="vsa-webapi\bin\**;vsa-webapi\obj\**;vsa-webapi\**\bin\**;vsa-webapi\**\obj\**" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>
