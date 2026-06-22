@@ -26,7 +26,6 @@ public sealed class GetListSampleHandler(AppDbContext _db, IMapper _mapper)
         query = query.ApplySort(request.SortBy, request.OrderBy, defaultSortBy: "Name");
 
         var projectedQuery = query
-            .Where(e => !e.IsDeleted)
             .ProjectToType<GetListSampleViewModel>(_mapper.Config);
 
         var pagedList = await PagedList<GetListSampleViewModel>.CreateAsync(

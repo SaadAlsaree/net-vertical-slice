@@ -45,7 +45,7 @@
     {
       "id": "ApiDocsTool",
       "name": {
-        "text": "Post Type"
+        "text": "API Documentation"
       },
       "description": {
         "text": "Choose which API docs UI to generate."
@@ -98,6 +98,36 @@
           },
           "description": {
             "text": "Do not configure output caching middleware."
+          }
+        }
+      ]
+    },
+    {
+      "id": "AuthProvider",
+      "name": {
+        "text": "Authentication"
+      },
+      "description": {
+        "text": "Choose the authentication provider for securing the API."
+      },
+      "isVisible": true,
+      "choices": [
+        {
+          "id": "None",
+          "name": {
+            "text": "No Authentication"
+          },
+          "description": {
+            "text": "Do not configure authentication."
+          }
+        },
+        {
+          "id": "Keycloak",
+          "name": {
+            "text": "Keycloak"
+          },
+          "description": {
+            "text": "Configure JWT Bearer authentication with Keycloak."
           }
         }
       ]

@@ -2,11 +2,11 @@ namespace VsaTemplate.Infrastructure.Common;
 
 public class Response<T>
 {
-    public bool Succeeded { get; set; }
-    public T? Data { get; set; }
-    public string Message { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty;
-    public List<ValidationErrorDetail> Errors { get; set; } = new();
+    public bool Succeeded { get; init; }
+    public T? Data { get; init; }
+    public string Message { get; init; } = string.Empty;
+    public string Code { get; init; } = string.Empty;
+    public List<ValidationErrorDetail> Errors { get; init; } = new();
 
     public static Response<T> Success(T data, string message = "Operation succeeded")
     {
@@ -47,10 +47,4 @@ public class Response<T>
             Errors = errors
         };
     }
-}
-
-public class ValidationErrorDetail
-{
-    public string Property { get; set; } = string.Empty;
-    public string Message { get; set; } = string.Empty;
 }

@@ -1,5 +1,7 @@
 using __RootNamespace__.Data;
+using __RootNamespace__.Data.Entities.__Category__;
 using __RootNamespace__.Infrastructure.Common;
+using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +13,9 @@ public sealed class GetById__Entity__Handler(__DbContext__ _db, IMapper _mapper)
         GetById__Entity__Query request,
         CancellationToken cancellationToken)
     {
-        var entity = await _db.__Entity__s
+        var entity = await _db.Set<__Entity__>()
             .AsNoTracking()
-            .Where(e => e.Id == request.Id && !e.IsDeleted)
+            .Where(e => e.Id == request.Id)
             .ProjectToType<GetById__Entity__ViewModel>(_mapper.Config)
             .FirstOrDefaultAsync(cancellationToken);
 

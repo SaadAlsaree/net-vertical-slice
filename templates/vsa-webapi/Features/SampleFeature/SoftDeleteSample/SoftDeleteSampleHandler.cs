@@ -11,15 +11,14 @@ public sealed class SoftDeleteSampleHandler(AppDbContext _db)
         CancellationToken cancellationToken)
     {
         var entity = await _db.Samples
-            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
         if (entity is null)
             return Response<Guid>.Failure(
                 Error.NotFound("Sample.NotFound", "Sample not found"));
 
-        entity.IsDeleted = true;
-        entity.DeletedAt = DateTime.UtcNow;
-
+        // SaveChangesAsync intercepts EntityState.Deleted and converts it to a soft-delete
+        _db.Samples.Remove(entity);
         await _db.SaveChangesAsync(cancellationToken);
 
         return Response<Guid>.Success(entity.Id);

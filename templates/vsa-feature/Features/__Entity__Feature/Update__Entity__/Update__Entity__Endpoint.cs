@@ -1,4 +1,5 @@
 using __RootNamespace__.Infrastructure.Common;
+using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 using Wolverine.Http;
 

@@ -57,6 +57,17 @@
       "description": "Caching option",
       "replaces": "__CACHE_TOOL__"
     },
+    "AuthProvider": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "None", "description": "No authentication provider" },
+        { "choice": "Keycloak", "description": "Keycloak JWT Bearer authentication" }
+      ],
+      "defaultValue": "None",
+      "description": "Authentication provider",
+      "replaces": "__AUTH_PROVIDER__"
+    },
     "DB_SQLSERVER": {
       "type": "computed",
       "value": "(DbProvider == \"SqlServer\")"
@@ -76,6 +87,10 @@
     "CACHE_OUTPUT": {
       "type": "computed",
       "value": "(CacheTool == \"OutputCache\")"
+    },
+    "AUTH_KEYCLOAK": {
+      "type": "computed",
+      "value": "(AuthProvider == \"Keycloak\")"
     },
     "ApiDocsLaunchUrl": {
       "type": "generated",

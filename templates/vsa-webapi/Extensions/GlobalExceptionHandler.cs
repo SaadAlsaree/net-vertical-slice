@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using FluentValidation;
 using VsaTemplate.Infrastructure.Common;
@@ -21,60 +20,66 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var (statusCode, error) = exception switch
+        var correlationId = httpContext.Request.Headers["X-Correlation-ID"].FirstOrDefault()
+                            ?? Guid.NewGuid().ToString();
+        httpContext.Response.Headers["X-Correlation-ID"] = correlationId;
+
+        Response<object> response;
+        HttpStatusCode statusCode;
+
+        switch (exception)
         {
-            ValidationException validationEx => (
-                HttpStatusCode.BadRequest,
-                Error.Validation("Validation.Error", "Validation failed")),
+            case ValidationException validationException:
+                statusCode = HttpStatusCode.BadRequest;
+                response = Response<object>.Failure(
+                    validationException.Errors
+                        .Select(e => new ValidationErrorDetail
+                        {
+                            Property = e.PropertyName,
+                            Message = e.ErrorMessage
+                        }).ToList());
+                _logger.LogInformation(exception, "Validation failed: {Message}", exception.Message);
+                break;
 
-            NotFoundException => (
-                HttpStatusCode.NotFound,
-                Error.NotFound("Resource.NotFound", exception.Message)),
+            case NotFoundException:
+                statusCode = HttpStatusCode.NotFound;
+                response = Response<object>.Failure(
+                    Error.NotFound("Resource.NotFound", exception.Message));
+                _logger.LogError(exception, "Resource not found: {Message}", exception.Message);
+                break;
 
-            ForbiddenException => (
-                HttpStatusCode.Forbidden,
-                Error.Forbidden("Access.Forbidden", exception.Message)),
+            case ForbiddenException:
+                statusCode = HttpStatusCode.Forbidden;
+                response = Response<object>.Failure(
+                    Error.Forbidden("Access.Forbidden", exception.Message));
+                _logger.LogError(exception, "Forbidden: {Message}", exception.Message);
+                break;
 
-            UnauthorizedAccessException => (
-                HttpStatusCode.Unauthorized,
-                Error.Failure("Auth.Unauthorized", "Unauthorized access")),
+            case UnauthorizedAccessException:
+                statusCode = HttpStatusCode.Unauthorized;
+                response = Response<object>.Failure(
+                    Error.Failure("Auth.Unauthorized", "Unauthorized access"));
+                _logger.LogError(exception, "Unauthorized: {Message}", exception.Message);
+                break;
 
-            DomainException domainEx => (
-                MapDomainError(domainEx.ErrorType),
-                new Error(domainEx.ErrorType, domainEx.ErrorCode, domainEx.Message)),
+            case DomainException domainEx:
+                statusCode = MapDomainError(domainEx.ErrorType);
+                response = Response<object>.Failure(
+                    new Error(domainEx.ErrorType, domainEx.ErrorCode, domainEx.Message));
+                _logger.LogError(exception, "Domain error: {Message}", exception.Message);
+                break;
 
-            _ => (
-                HttpStatusCode.InternalServerError,
-                Error.Failure("Error.Internal", "An unexpected error occurred"))
-        };
-
-        var logLevel = exception is ValidationException
-            ? LogLevel.Information
-            : LogLevel.Error;
-
-        _logger.Log(logLevel, exception, "Exception handled: {Message}", exception.Message);
-
-        var response = Response<object>.Failure(error);
-
-        if (exception is ValidationException validationException)
-        {
-            response.Errors = validationException.Errors
-                .Select(e => new ValidationErrorDetail
-                {
-                    Property = e.PropertyName,
-                    Message = e.ErrorMessage
-                }).ToList();
+            default:
+                statusCode = HttpStatusCode.InternalServerError;
+                response = Response<object>.Failure(
+                    Error.Failure("Error.Internal", "An unexpected error occurred"));
+                _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
+                break;
         }
 
         httpContext.Response.StatusCode = (int)statusCode;
-        httpContext.Response.ContentType = "application/json";
 
-        await httpContext.Response.WriteAsync(
-            JsonSerializer.Serialize(response, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            }),
-            cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 
         return true;
     }

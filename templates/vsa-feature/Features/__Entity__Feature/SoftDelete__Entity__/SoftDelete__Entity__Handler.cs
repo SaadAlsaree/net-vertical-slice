@@ -1,4 +1,5 @@
 using __RootNamespace__.Data;
+using __RootNamespace__.Data.Entities.__Category__;
 using __RootNamespace__.Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,16 +11,15 @@ public sealed class SoftDelete__Entity__Handler(__DbContext__ _db)
         SoftDelete__Entity__Command request,
         CancellationToken cancellationToken)
     {
-        var entity = await _db.__Entity__s
-            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+        var entity = await _db.Set<__Entity__>()
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
         if (entity is null)
             return Response<Guid>.Failure(
                 Error.NotFound("__Entity__.NotFound", "__Entity__ not found"));
 
-        entity.IsDeleted = true;
-        entity.DeletedAt = DateTime.UtcNow;
-
+        // SaveChangesAsync intercepts EntityState.Deleted and converts it to a soft-delete
+        _db.Set<__Entity__>().Remove(entity);
         await _db.SaveChangesAsync(cancellationToken);
 
         return Response<Guid>.Success(entity.Id);

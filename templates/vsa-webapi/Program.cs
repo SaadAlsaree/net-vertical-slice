@@ -18,6 +18,9 @@ using Wolverine.Http.FluentValidation;
 #if APIDOCS_SCALAR
 using Scalar.AspNetCore;
 #endif
+#if AUTH_KEYCLOAK
+using VsaTemplate.Models;
+#endif
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +34,10 @@ builder.Host.UseSerilog((context, config) =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
 
-builder.Services.AddDbContextPool<AppDbContext>(options =>
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<AuditSaveChangesInterceptor>();
+
+builder.Services.AddDbContextPool<AppDbContext>((sp, options) =>
 {
 #if DB_SQLSERVER
     options.UseSqlServer(connectionString);
@@ -40,6 +46,7 @@ builder.Services.AddDbContextPool<AppDbContext>(options =>
 #else
     options.UseNpgsql(connectionString);
 #endif
+    options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
 });
 
 // 3. Wolverine
@@ -52,12 +59,70 @@ builder.Host.UseWolverine(options =>
 // 4. Wolverine HTTP
 builder.Services.AddWolverineHttp();
 
+#if AUTH_KEYCLOAK
+var keycloakSettings = builder.Configuration
+    .GetSection("Keycloak")
+    .Get<KeycloakSettings>() ?? throw new InvalidOperationException("Keycloak configuration section is missing or invalid.");
+#endif
+
 // 5. API Documentation
 #if APIDOCS_SWAGGER
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+#if AUTH_KEYCLOAK
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+#endif
+});
 #elif APIDOCS_SCALAR
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+#if AUTH_KEYCLOAK
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Title += " - Keycloak";
+        document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
+        document.Components.SecuritySchemes["Bearer"] = new Microsoft.OpenApi.OpenApiSecurityScheme
+        {
+            Type = Microsoft.OpenApi.SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            Description = "JWT Authorization header using the Bearer scheme."
+        };
+
+        document.Security ??= [];
+        document.Security.Add(new Microsoft.OpenApi.OpenApiSecurityRequirement
+        {
+            { new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer"), new List<string>() }
+        });
+
+        return Task.CompletedTask;
+    });
+#endif
+});
 #endif
 
 // 6. Mapster
@@ -68,13 +133,30 @@ builder.Services.AddScoped<IMapper, ServiceMapper>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // 8. CORS
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+if (corsOrigins.Length == 0 && builder.Environment.IsProduction())
+{
+    throw new InvalidOperationException("Cors:AllowedOrigins must be configured in Production. Add it to appsettings.Production.json or via environment variables.");
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultPolicy", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        if (corsOrigins.Length > 0)
+        {
+            policy.WithOrigins(corsOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // Development fallback: permissive
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
     });
 });
 
@@ -89,8 +171,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+#if AUTH_KEYCLOAK
+// 11. Authentication
+builder.Services.AddKeycloakAuthentication(keycloakSettings, builder.Environment);
+#endif
+
 #if CACHE_OUTPUT
-// 11. Output caching
+// 12. Output caching
 builder.Services.AddOutputCache(options =>
 {
     options.AddPolicy("ApiGet", policy =>
@@ -105,6 +192,10 @@ var app = builder.Build();
 // Middleware pipeline
 app.UseExceptionHandler();
 app.UseCors("DefaultPolicy");
+#if AUTH_KEYCLOAK
+app.UseAuthentication();
+app.UseAuthorization();
+#endif
 #if CACHE_OUTPUT
 app.UseOutputCache();
 #endif

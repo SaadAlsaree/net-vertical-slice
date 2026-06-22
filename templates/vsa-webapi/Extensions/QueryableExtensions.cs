@@ -11,20 +11,26 @@ public static class QueryableExtensions
         string? orderBy,
         string defaultSortBy = "Id")
     {
-        var property = sortBy ?? defaultSortBy;
         var direction = string.Equals(orderBy, "desc", StringComparison.OrdinalIgnoreCase)
             ? "descending"
             : "ascending";
 
-        var entityProperty = typeof(T).GetProperty(
-            property,
-            BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-        if (entityProperty is null)
+        var property = ResolveProperty(typeof(T), sortBy) ?? ResolveProperty(typeof(T), defaultSortBy);
+        if (property is null)
         {
-            property = defaultSortBy;
+            return query;
         }
 
         return query.OrderBy($"{property} {direction}");
+    }
+
+    private static string? ResolveProperty(Type type, string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        return type.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?.Name;
     }
 }

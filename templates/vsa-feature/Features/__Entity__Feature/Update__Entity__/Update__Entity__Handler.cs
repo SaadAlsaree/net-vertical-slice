@@ -1,4 +1,5 @@
 using __RootNamespace__.Data;
+using __RootNamespace__.Data.Entities.__Category__;
 using __RootNamespace__.Infrastructure.Common;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,8 @@ public sealed class Update__Entity__Handler(__DbContext__ _db, IMapper _mapper)
         Update__Entity__Command request,
         CancellationToken cancellationToken)
     {
-        var entity = await _db.__Entity__s
-            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+        var entity = await _db.Set<__Entity__>()
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
         if (entity is null)
             return Response<Guid>.Failure(

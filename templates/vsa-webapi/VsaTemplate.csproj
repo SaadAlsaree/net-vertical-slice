@@ -8,6 +8,7 @@
     <DbProvider>__DB_PROVIDER__</DbProvider>
     <ApiDocsTool>__APIDOCS_TOOL__</ApiDocsTool>
     <CacheTool>__CACHE_TOOL__</CacheTool>
+    <AuthProvider>__AUTH_PROVIDER__</AuthProvider>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DbProvider)' == 'PostgreSQL' Or '$(DbProvider)' == '__DB_PROVIDER__'">
@@ -34,44 +35,52 @@
     <DefineConstants>$(DefineConstants);CACHE_OUTPUT</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(AuthProvider)' == 'Keycloak'">
+    <DefineConstants>$(DefineConstants);AUTH_KEYCLOAK</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="WolverineFx" Version="5.*" />
-    <PackageReference Include="WolverineFx.FluentValidation" Version="5.*" />
-    <PackageReference Include="WolverineFx.Http" Version="5.*" />
-    <PackageReference Include="WolverineFx.Http.FluentValidation" Version="5.*" />
-    <PackageReference Include="Mapster" Version="7.*" />
-    <PackageReference Include="Mapster.DependencyInjection" Version="1.*" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.*">
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.FluentValidation" />
+    <PackageReference Include="WolverineFx.Http" />
+    <PackageReference Include="WolverineFx.Http.FluentValidation" />
+    <PackageReference Include="Mapster" />
+    <PackageReference Include="Mapster.DependencyInjection" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Serilog.AspNetCore" Version="9.*" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.*" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.*" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="System.Linq.Dynamic.Core" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)' == 'PostgreSQL' Or '$(DbProvider)' == '__DB_PROVIDER__'">
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)' == 'SqlServer'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)' == 'Sqlite'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(ApiDocsTool)' == 'Scalar' Or '$(ApiDocsTool)' == '__APIDOCS_TOOL__'">
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.*" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(ApiDocsTool)' == 'Swagger'">
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.*" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AuthProvider)' == 'Keycloak'">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
 </Project>

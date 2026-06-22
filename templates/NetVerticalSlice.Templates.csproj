@@ -4,7 +4,7 @@
     <EnableDefaultItems>false</EnableDefaultItems>
     <PackageType>Template</PackageType>
     <PackageId>NetVerticalSlice.Templates</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>net-vertical-slice</Authors>
     <Description>Project templates for Net Vertical Slice architecture, including the Wolverine VSA Web API template.</Description>
     <PackageTags>dotnet-new;template;webapi;vsa;wolverine;cqrs</PackageTags>
@@ -19,7 +19,9 @@
 
   <ItemGroup>
     <Content Include="vsa-webapi\**\*"
-             Exclude="vsa-webapi\bin\**;vsa-webapi\obj\**;vsa-webapi\**\bin\**;vsa-webapi\**\obj\**" />
+             Exclude="vsa-webapi\bin\**;vsa-webapi\obj\**;vsa-webapi\.vs\**;vsa-webapi\**\bin\**;vsa-webapi\**\obj\**;vsa-webapi\SKILL.md;vsa-webapi\*.user" />
+    <Content Include="vsa-feature\**\*"
+             Exclude="vsa-feature\bin\**;vsa-feature\obj\**;vsa-feature\**\bin\**;vsa-feature\**\obj\**" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

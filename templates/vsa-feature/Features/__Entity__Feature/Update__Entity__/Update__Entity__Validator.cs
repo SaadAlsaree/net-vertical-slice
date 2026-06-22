@@ -1,4 +1,5 @@
 using __RootNamespace__.Data;
+using __RootNamespace__.Data.Entities.__Category__;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class Update__Entity__Validator : AbstractValidator<Update__Entity__Comma
 
     private async Task<bool> BeUniqueName(Update__Entity__Command command, string name, CancellationToken cancellationToken)
     {
-        return !await _context.__Entity__s.AnyAsync(
+        return !await _context.Set<__Entity__>().AnyAsync(
             x => x.Name == name && x.Id != command.Id, cancellationToken);
     }
 }

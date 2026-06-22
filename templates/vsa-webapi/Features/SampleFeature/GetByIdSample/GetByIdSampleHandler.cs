@@ -14,7 +14,7 @@ public sealed class GetByIdSampleHandler(AppDbContext _db, IMapper _mapper)
     {
         var entity = await _db.Samples
             .AsNoTracking()
-            .Where(e => e.Id == request.Id && !e.IsDeleted)
+            .Where(e => e.Id == request.Id)
             .ProjectToType<GetByIdSampleViewModel>(_mapper.Config)
             .FirstOrDefaultAsync(cancellationToken);
 

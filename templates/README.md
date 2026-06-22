@@ -5,6 +5,7 @@ This package contains .NET project templates maintained by net-vertical-slice.
 ## Included templates
 
 - `vsa-webapi` - Wolverine VSA Web API
+- `vsa-feature` - Wolverine VSA Feature (item template)
 
 ## Install
 
@@ -26,10 +27,14 @@ dotnet pack NetVerticalSlice.Templates.csproj -c Release
 
 The package is created at:
 
-`bin/Release/NetVerticalSlice.Templates.1.0.0.nupkg`
+`bin/Release/NetVerticalSlice.Templates.1.0.2.nupkg`
 
 ## Publish to NuGet.org
 
+Requires the `NUGET_API_KEY` environment variable. **Never commit API keys to source control.**
+
 ```bash
-dotnet nuget push .\bin\Release\NetVerticalSlice.Templates.1.0.0.nupkg --source https://api.nuget.org/v3/index.json --api-key oy2jdh45dowd7wiytoyaswmqcxfcrk4ujbowzjrm34mtwq
+dotnet nuget push .\bin\Release\NetVerticalSlice.Templates.<version>.nupkg \
+  --source https://api.nuget.org/v3/index.json \
+  --api-key $NUGET_API_KEY
 ```

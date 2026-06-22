@@ -4,11 +4,9 @@ using VsaTemplate.Data.Entities;
 
 namespace VsaTemplate.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-    public DbSet<Sample> Samples { get; set; }
+    public DbSet<Sample> Samples => Set<Sample>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,23 +29,5 @@ public class AppDbContext : DbContext
         var prop = System.Linq.Expressions.Expression.Property(param, nameof(BaseEntity.IsDeleted));
         var filter = System.Linq.Expressions.Expression.Not(prop);
         return System.Linq.Expressions.Expression.Lambda(filter, param);
-    }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.LastUpdateAt = DateTime.UtcNow;
-                    break;
-            }
-        }
-
-        return base.SaveChangesAsync(cancellationToken);
     }
 }

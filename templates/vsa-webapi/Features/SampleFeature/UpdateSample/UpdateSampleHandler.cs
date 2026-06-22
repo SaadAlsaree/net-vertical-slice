@@ -12,7 +12,7 @@ public sealed class UpdateSampleHandler(AppDbContext _db, IMapper _mapper)
         CancellationToken cancellationToken)
     {
         var entity = await _db.Samples
-            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
         if (entity is null)
             return Response<Guid>.Failure(

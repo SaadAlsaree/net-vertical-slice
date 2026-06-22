@@ -60,12 +60,14 @@ dotnet new vsa-webapi -n MyApp
 
 #### Parameters
 
-| Parameter      | Default       | Description                       |
-| -------------- | ------------- | --------------------------------- |
-| `-n`           | directory name | Project name / namespace          |
-| `-F` / `--Framework` | `net10.0` | `net10.0` or `net9.0`      |
-| `-D` / `--DbProvider` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite` |
-| `-A` / `--ApiDocsTool` | `Scalar` | `Scalar`, `Swagger`, or `None` |
+| Parameter      | Default       | Description                                   |
+| -------------- | ------------- | --------------------------------------------- |
+| `-n`           | directory name | Project name / namespace                       |
+| `-F` / `--Framework` | `net10.0` | `net10.0` or `net9.0`                    |
+| `-D` / `--DbProvider` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite`   |
+| `-A` / `--ApiDocsTool` | `Scalar` | `Scalar` or `Swagger`                       |
+| `-C` / `--CacheTool` | `OutputCache` | `OutputCache` or `None`                  |
+| `-Au` / `--AuthProvider` | `None` | `None` or `Keycloak`                         |
 
 #### Generated Structure
 
@@ -476,7 +478,8 @@ public sealed class GetList{Entity}Handler(AppDbContext _db, IMapper _mapper)
         GetList{Entity}Query request,
         CancellationToken cancellationToken)
     {
-        var query = _db.{DbSetName}.AsNoTracking().AsSplitQuery();
+        var query = _db.{DbSetName}.AsNoTracking();
+        // Note: add .AsSplitQuery() ONLY when .Include()-ing multiple collections
 
         // Search filter
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -497,9 +500,8 @@ public sealed class GetList{Entity}Handler(AppDbContext _db, IMapper _mapper)
         query = query.ApplySort(request.SortBy, request.OrderBy,
             defaultSortBy: "{DefaultSortProperty}");
 
-        // Project and paginate
+        // Project and paginate (soft-delete is filtered globally by AppDbContext)
         var projectedQuery = query
-            .Where(e => !e.IsDeleted)  // Global soft-delete filter
             .ProjectToType<GetList{Entity}ViewModel>(_mapper.Config);
 
         var pagedList = await PagedList<GetList{Entity}ViewModel>.CreateAsync(
@@ -516,10 +518,10 @@ public sealed class GetList{Entity}Handler(AppDbContext _db, IMapper _mapper)
 **Rules:**
 
 - Always use `.AsNoTracking()` for read queries
-- Use `.AsSplitQuery()` when including related data
+- Use `.AsSplitQuery()` only when including multiple related collections
 - Search uses `.ToLower().Contains()` for case-insensitive matching
 - Use `ApplySort()` extension for dynamic sorting
-- Exclude soft-deleted records: `.Where(e => !e.IsDeleted)`
+- Soft-deleted records are excluded automatically by `AppDbContext`'s global query filter (no manual filtering needed in handlers)
 - Use `ProjectToType<TViewModel>()` for efficient SQL projection
 - Always use `PagedList<T>.CreateAsync()` for pagination
 
@@ -603,7 +605,7 @@ public sealed class GetById{Entity}Handler(AppDbContext _db, IMapper _mapper)
             .AsNoTracking()
             .AsSplitQuery()
             .Include(e => e.RelatedCollection)
-            .Where(e => e.Id == request.Id && !e.IsDeleted)
+            .Where(e => e.Id == request.Id)
             .ProjectToType<GetById{Entity}ViewModel>(_mapper.Config)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -685,15 +687,14 @@ public sealed class SoftDelete{Entity}Handler(AppDbContext _db)
         CancellationToken cancellationToken)
     {
         var entity = await _db.{DbSetName}
-            .FirstOrDefaultAsync(e => e.Id == request.Id && !e.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
         if (entity is null)
             return Response<Guid>.Failure(
                 Error.NotFound("{Entity}.NotFound", "{Entity} not found"));
 
-        entity.IsDeleted = true;
-        entity.DeletedAt = DateTime.UtcNow;
-
+        // SaveChangesAsync intercepts EntityState.Deleted and converts it to a soft-delete
+        _db.{DbSetName}.Remove(entity);
         await _db.SaveChangesAsync(cancellationToken);
 
         return Response<Guid>.Success(entity.Id);
@@ -1004,7 +1005,7 @@ The centralized exception handler maps exception types to HTTP status codes:
 **Key behavior:**
 
 - All responses use `Response<object>.Failure(error)` for consistency
-- Adds `X-Correlation-ID` header for request tracing
+- Adds `X-Correlation-ID` header to every error response (reuses request's value if provided, otherwise generates a new GUID)
 - `ValidationException` errors are logged at `Information` level (not errors)
 - Unhandled exceptions are logged at `Error` level with full stack trace
 
@@ -1171,7 +1172,7 @@ URL uses **kebab-case** (e.g., `/api/app-roles`, `/api/org-units`)
 - [ ] Mapping config implements `IRegister`
 - [ ] Update mapping ignores `Id` and `CreatedAt`
 - [ ] List queries use `.AsNoTracking()` and `ProjectToType<T>()`
-- [ ] Soft-delete filter applied: `.Where(e => !e.IsDeleted)`
+- [ ] Soft-deleted records rely on AppDbContext global query filter (no manual `.Where(e => !e.IsDeleted)` in handlers)
 - [ ] Pagination uses `PagedList<T>.CreateAsync()`
 - [ ] Error codes follow `{Domain}.{Action}` convention
 - [ ] URL follows kebab-case convention

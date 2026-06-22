@@ -1,6 +1,8 @@
 using __RootNamespace__.Data;
+using __RootNamespace__.Data.Entities.__Category__;
 using __RootNamespace__.Extensions;
 using __RootNamespace__.Infrastructure.Common;
+using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,7 @@ public sealed class GetList__Entity__Handler(__DbContext__ _db, IMapper _mapper)
         GetList__Entity__Query request,
         CancellationToken cancellationToken)
     {
-        var query = _db.__Entity__s.AsNoTracking();
+        var query = _db.Set<__Entity__>().AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -25,7 +27,6 @@ public sealed class GetList__Entity__Handler(__DbContext__ _db, IMapper _mapper)
         query = query.ApplySort(request.SortBy, request.OrderBy, defaultSortBy: "Name");
 
         var projectedQuery = query
-            .Where(e => !e.IsDeleted)
             .ProjectToType<GetList__Entity__ViewModel>(_mapper.Config);
 
         var pagedList = await PagedList<GetList__Entity__ViewModel>.CreateAsync(
