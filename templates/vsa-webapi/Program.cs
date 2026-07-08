@@ -18,8 +18,11 @@ using Wolverine.Http.FluentValidation;
 #if APIDOCS_SCALAR
 using Scalar.AspNetCore;
 #endif
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
 using VsaTemplate.Models;
+#endif
+#if AUTH_IDENTITY
+using VsaTemplate.Infrastructure.Authentication;
 #endif
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,13 +67,18 @@ var keycloakSettings = builder.Configuration
     .GetSection("Keycloak")
     .Get<KeycloakSettings>() ?? throw new InvalidOperationException("Keycloak configuration section is missing or invalid.");
 #endif
+#if AUTH_IDENTITY
+var jwtSettings = builder.Configuration
+    .GetSection("Jwt")
+    .Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt configuration section is missing or invalid.");
+#endif
 
 // 5. API Documentation
 #if APIDOCS_SWAGGER
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
@@ -100,10 +108,14 @@ builder.Services.AddSwaggerGen(options =>
 #elif APIDOCS_SCALAR
 builder.Services.AddOpenApi(options =>
 {
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
+#if AUTH_KEYCLOAK
         document.Info.Title += " - Keycloak";
+#elif AUTH_IDENTITY
+        document.Info.Title += " - Identity";
+#endif
         document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
         document.Components.SecuritySchemes["Bearer"] = new Microsoft.OpenApi.OpenApiSecurityScheme
         {
@@ -175,6 +187,12 @@ builder.Services.AddProblemDetails();
 // 11. Authentication
 builder.Services.AddKeycloakAuthentication(keycloakSettings, builder.Environment);
 #endif
+#if AUTH_IDENTITY
+// 11. Authentication
+builder.Services.AddIdentityAuthentication(jwtSettings, builder.Environment);
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<ITokenService, TokenService>();
+#endif
 
 #if CACHE_OUTPUT
 // 12. Output caching
@@ -192,7 +210,7 @@ var app = builder.Build();
 // Middleware pipeline
 app.UseExceptionHandler();
 app.UseCors("DefaultPolicy");
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
 app.UseAuthentication();
 app.UseAuthorization();
 #endif

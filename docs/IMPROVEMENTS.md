@@ -91,7 +91,7 @@ Observed inconsistencies in the *template* parameters across sources:
 **[Enhancement]** The current harness (`TemplateTests`) verifies that generated code **compiles** — valuable, but it doesn't catch *runtime* regressions. Suggestions, roughly in priority order:
 
 - **Cover all `--DbProvider` × `--ApiDocsTool` × `--CacheTool` × `--AuthProvider` combinations**, not just the single `Sqlite/Scalar/OutputCache/None` build currently tested. `[Theory]` with `[InlineData]` over the matrix would catch conditional-compile bugs (e.g., a typo in an `#if AUTH_KEYCLOAK` block).
-- **Add a build of the `vsa-webapi` template *with* Keycloak** — that's the only path that compiles `AuthExtensions.cs` and the OpenAPI security transformer; it's currently untested.
+- ~~**Add a build of the `vsa-webapi` template *with* Keycloak** — that's the only path that compiles `AuthExtensions.cs` and the OpenAPI security transformer; it's currently untested.~~ ✅ Covered: builds for Keycloak and Identity (across all 3 DB providers) are now in `WebApiTemplateTests`.
 - **Runtime smoke test:** spin up the SQLite variant in `WebApplicationFactory`, `POST` to `/api/samples`, and assert the `Response<T>` envelope. This would catch issues the build can't (e.g., DI wiring, Wolverine endpoint mapping, Mapster config discovery).
 - **Cross-platform CI.** The workflow pins `windows-latest`. Nothing in the templates is Windows-specific — adding `ubuntu-latest` would broaden coverage and catch path-casing issues.
 

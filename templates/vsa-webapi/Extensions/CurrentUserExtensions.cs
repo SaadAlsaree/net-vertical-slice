@@ -1,4 +1,4 @@
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
 using System.Security.Claims;
 using VsaTemplate.Models;
 

@@ -39,6 +39,14 @@
     <DefineConstants>$(DefineConstants);AUTH_KEYCLOAK</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(AuthProvider)' == 'Identity'">
+    <DefineConstants>$(DefineConstants);AUTH_IDENTITY</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AuthProvider)' == 'Keycloak' Or '$(AuthProvider)' == 'Identity'">
+    <DefineConstants>$(DefineConstants);AUTH_ENABLED</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="WolverineFx.FluentValidation" />
@@ -81,6 +89,11 @@
 
   <ItemGroup Condition="'$(AuthProvider)' == 'Keycloak'">
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AuthProvider)' == 'Identity'">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
   </ItemGroup>
 
 </Project>

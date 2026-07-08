@@ -62,7 +62,8 @@
       "datatype": "choice",
       "choices": [
         { "choice": "None", "description": "No authentication provider" },
-        { "choice": "Keycloak", "description": "Keycloak JWT Bearer authentication" }
+        { "choice": "Keycloak", "description": "Keycloak JWT Bearer authentication" },
+        { "choice": "Identity", "description": "ASP.NET Core Identity with local JWT Bearer authentication" }
       ],
       "defaultValue": "None",
       "description": "Authentication provider",
@@ -91,6 +92,14 @@
     "AUTH_KEYCLOAK": {
       "type": "computed",
       "value": "(AuthProvider == \"Keycloak\")"
+    },
+    "AUTH_IDENTITY": {
+      "type": "computed",
+      "value": "(AuthProvider == \"Identity\")"
+    },
+    "AUTH_ENABLED": {
+      "type": "computed",
+      "value": "(AuthProvider == \"Keycloak\" || AuthProvider == \"Identity\")"
     },
     "ApiDocsLaunchUrl": {
       "type": "generated",

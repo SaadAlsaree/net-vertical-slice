@@ -1,4 +1,4 @@
-#if AUTH_KEYCLOAK
+#if AUTH_ENABLED
 namespace VsaTemplate.Models;
 
 public sealed record CurrentUser

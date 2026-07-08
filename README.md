@@ -21,7 +21,7 @@ Ship a clean, opinionated .NET Web API in minutes — not days. This repository 
 [![Wolverine](https://img.shields.io/badge/Wolverine-5.1-512BD4)](https://wolverinefx.net/)
 [![EF Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4)](https://learn.microsoft.com/ef/)
 [![C#](https://img.shields.io/badge/C%23-13-239120?logo=csharp&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
-[![Template Version](https://img.shields.io/badge/template%20version-1.0.2-brightgreen)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/templates/NetVerticalSlice.Templates.csproj)
+[![Template Version](https://img.shields.io/badge/template%20version-1.1.0-brightgreen)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/templates/NetVerticalSlice.Templates.csproj)
 
 <br />
 
@@ -55,6 +55,7 @@ Ship a clean, opinionated .NET Web API in minutes — not days. This repository 
 | 📝 | **Serilog** structured logging | Console + rolling file |
 | 📚 | **Scalar** or **Swagger** | Modern API documentation UI |
 | 🔐 | **Keycloak JWT** auth (optional) | Production-ready Bearer authentication |
+| 🔐 | **ASP.NET Core Identity** (optional) | Local Identity with JWT Bearer — login/register/refresh/logout endpoints |
 | ⚡ | **Output caching** (optional) | ASP.NET Core output caching middleware |
 | 🔧 | **Central Package Management** | `Directory.Packages.props` for version control |
 
@@ -145,7 +146,7 @@ dotnet new vsa-webapi -n <ProjectName> [options]
 | `--DbProvider` | `-D` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite` |
 | `--ApiDocsTool` | `-A` | `Scalar` | `Scalar`, `Swagger` |
 | `--CacheTool` | `-C` | `OutputCache` | `OutputCache`, `None` |
-| `--AuthProvider` | `-Au` | `None` | `None`, `Keycloak` |
+| `--AuthProvider` | `-Au` | `None` | `None`, `Keycloak`, `Identity` |
 
 > These options are also exposed in the **Visual Studio / Rider New Project dialog** via `.template.config/ide.host.json`.
 
@@ -281,7 +282,7 @@ net-vertical-slice/
 │   └── IMPROVEMENTS.md               # Improvement suggestions
 │
 └── templates/
-    ├── NetVerticalSlice.Templates.csproj  # NuGet pack project (v1.0.2)
+    ├── NetVerticalSlice.Templates.csproj  # NuGet pack project (v1.1.0)
     │
     ├── vsa-webapi/                        # 📦 PROJECT TEMPLATE
     │   ├── .template.config/              #   template.json, ide.host.json, icon
@@ -321,7 +322,7 @@ net-vertical-slice/
 ```bash
 # Create a new VSA Web API
 dotnet new vsa-webapi -n <Name> [-F net10.0|net9.0] [-D PostgreSQL|SqlServer|Sqlite] \
-                              [-A Scalar|Swagger] [-C OutputCache|None] [-Au None|Keycloak]
+                              [-A Scalar|Swagger] [-C OutputCache|None] [-Au None|Keycloak|Identity]
 
 # Generate a CRUD feature inside an existing project
 dotnet new vsa-feature -n <Entity> --ResourceName <kebab> [--Category Core] \
@@ -373,6 +374,14 @@ See [**docs/CONTRIBUTING.md**](./docs/CONTRIBUTING.md) for the full guide.
 ## 📄 License
 
 This project is licensed under the **MIT License** — see [LICENSE](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE) for details.
+
+---
+
+## 👤 Author
+
+**Saad Alsaree**
+
+[![GitHub](https://img.shields.io/badge/GitHub-SaadAlsaree-181717?logo=github&logoColor=white)](https://github.com/SaadAlsaree)
 
 ---
 

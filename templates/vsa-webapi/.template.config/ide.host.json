@@ -129,6 +129,15 @@
           "description": {
             "text": "Configure JWT Bearer authentication with Keycloak."
           }
+        },
+        {
+          "id": "Identity",
+          "name": {
+            "text": "ASP.NET Core Identity"
+          },
+          "description": {
+            "text": "Local ASP.NET Core Identity with JWT Bearer authentication, including login/register/refresh/logout endpoints."
+          }
         }
       ]
     }

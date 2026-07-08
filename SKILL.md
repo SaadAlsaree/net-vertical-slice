@@ -67,7 +67,7 @@ dotnet new vsa-webapi -n MyApp
 | `-D` / `--DbProvider` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite`   |
 | `-A` / `--ApiDocsTool` | `Scalar` | `Scalar` or `Swagger`                       |
 | `-C` / `--CacheTool` | `OutputCache` | `OutputCache` or `None`                  |
-| `-Au` / `--AuthProvider` | `None` | `None` or `Keycloak`                         |
+| `-Au` / `--AuthProvider` | `None` | `None`, `Keycloak`, or `Identity`               |
 
 #### Generated Structure
 

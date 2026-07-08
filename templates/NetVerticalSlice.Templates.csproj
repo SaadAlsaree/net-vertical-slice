@@ -4,7 +4,7 @@
     <EnableDefaultItems>false</EnableDefaultItems>
     <PackageType>Template</PackageType>
     <PackageId>NetVerticalSlice.Templates</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <Authors>net-vertical-slice</Authors>
     <Description>Project templates for Net Vertical Slice architecture, including the Wolverine VSA Web API template.</Description>
     <PackageTags>dotnet-new;template;webapi;vsa;wolverine;cqrs</PackageTags>
