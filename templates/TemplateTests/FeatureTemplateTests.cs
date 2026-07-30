@@ -15,7 +15,7 @@ public sealed class FeatureTemplateTests(TemplateFixture fixture)
             fixture.TemplatesRoot);
 
         fixture.RunDotnet(
-            $"new vsa-feature -n {entityName} -Re {resourceName} -C Catalog -R TestApi -D AppDbContext --output \"{root}\" --no-update-check",
+            $"new vsa-feature -n {entityName} -Re {resourceName} -C Catalog -R TestApi -D AppDbContext --GenerateEntity --output \"{root}\" --no-update-check",
             fixture.TemplatesRoot);
 
         fixture.RunDotnet($"build \"{Path.Combine(root, "TestApi.csproj")}\" --no-restore", root);

@@ -2,36 +2,52 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <IncludeWolverineRuntimeCompilation
+      Condition="'$(IncludeWolverineRuntimeCompilation)' == ''">true</IncludeWolverineRuntimeCompilation>
   </PropertyGroup>
   <ItemGroup>
     <!-- Wolverine -->
-    <PackageVersion Include="WolverineFx" Version="5.1.0" />
-    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.1.0" />
-    <PackageVersion Include="WolverineFx.Http" Version="5.1.0" />
-    <PackageVersion Include="WolverineFx.Http.FluentValidation" Version="5.1.0" />
+    <PackageVersion Include="WolverineFx" Version="6.24.1" />
+    <PackageVersion Include="WolverineFx.FluentValidation" Version="6.24.1" />
+    <PackageVersion Include="WolverineFx.Http" Version="6.24.1" />
+    <PackageVersion Include="WolverineFx.Http.FluentValidation" Version="6.24.1" />
+    <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.24.1" />
+    <PackageVersion
+      Include="Microsoft.CodeAnalysis.Workspaces.MSBuild"
+      Version="5.0.0"
+      Condition="'$(IncludeWolverineRuntimeCompilation)' == 'true'" />
 
     <!-- Mapping -->
     <PackageVersion Include="Mapster" Version="7.4.0" />
     <PackageVersion Include="Mapster.DependencyInjection" Version="1.0.1" />
 
     <!-- Validation -->
-    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
 
     <!-- EF Core -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 
     <!-- API Docs -->
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.1.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.0.0" />
 
     <!-- Auth -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+
+    <!-- Observability -->
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
 
     <!-- Logging -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />

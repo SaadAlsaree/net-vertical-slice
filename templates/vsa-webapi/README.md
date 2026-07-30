@@ -1,11 +1,11 @@
 # Wolverine VSA Web API Template
 
-This template creates an ASP.NET Core Web API using Wolverine CQRS, Vertical Slice Architecture, EF Core, FluentValidation, and Mapster.
+This template creates a .NET 10 ASP.NET Core Web API using Wolverine 6 CQRS, Vertical Slice Architecture, EF Core, FluentValidation, and Mapster.
 
 ## 1) Create a project from the template
 
 ```bash
-dotnet new vsa-webapi -n Microchip.Api -D SqlServer -A Swagger -C OutputCache
+dotnet new vsa-webapi -n Microchip.Api -D SqlServer -A Swagger -C OutputCache -Au None
 cd Microchip.Api
 dotnet restore
 ```
@@ -15,6 +15,12 @@ Template options:
 - `-D|--DbProvider`: `PostgreSQL`, `SqlServer`, `Sqlite`
 - `-A|--ApiDocsTool`: `Scalar`, `Swagger`
 - `-C|--CacheTool`: `OutputCache`, `None`
+- `-Au|--AuthProvider`: `None`, `Identity`, `Keycloak`
+- `--Observability`: `None`, `OpenTelemetry`
+
+Authentication choices are isolated. Selecting `None` does not generate authentication
+files, packages, or configuration; selecting `Identity` does not generate Keycloak
+artifacts, and vice versa.
 
 ## 2) Configure connection string
 
@@ -80,7 +86,52 @@ If you selected:
 - `-A Swagger`: open `/swagger`
 - `-A Scalar`: open `/scalar/v1`
 
-## 6) Example Microchip API calls
+Invalid FluentValidation requests are returned as HTTP 400 ProblemDetails before the
+message is dispatched, so normal client validation failures are not logged as backend
+errors.
+
+## 6) Rate limiting
+
+Rate limiting is enabled for every generated project. Anonymous traffic is partitioned
+by client IP, authenticated traffic by the JWT `sub` claim, and Identity login,
+registration, and refresh endpoints have stricter policies. Limits are configurable
+under `RateLimiting` in `appsettings.json`; rejected requests return HTTP 429 with a
+`Retry-After` header and the standard `Response<T>` envelope.
+
+Normal Wolverine endpoints require no attributes because the global limiter applies
+automatically. Use `[EnableRateLimiting]` only when an endpoint needs a named policy,
+and `[DisableRateLimiting]` for operational endpoints such as health checks.
+
+## 7) Production build
+
+The included Dockerfile writes Wolverine's generated handlers during the SDK build,
+then publishes without `WolverineFx.RuntimeCompilation`, Roslyn workspaces, or EF design
+packages:
+
+```bash
+docker build --build-arg APP_ENVIRONMENT=Production -t microchip-api:latest .
+docker run --rm -p 8080:8080 microchip-api:latest
+```
+
+For a non-container publish:
+
+```bash
+dotnet run -c Release -p:IncludeWolverineRuntimeCompilation=true -- codegen write
+dotnet publish -c Release \
+  -p:IncludeWolverineRuntimeCompilation=false \
+  -p:IncludeEfDesignTimePackages=false
+```
+
+Local builds retain runtime compilation by default. The Production commands above
+explicitly disable it after writing the generated Wolverine code.
+
+## 8) Observability
+
+Generate with `--Observability OpenTelemetry`, set `OTEL_EXPORTER_OTLP_ENDPOINT`, and
+the service exports ASP.NET Core/runtime telemetry plus Wolverine's `Wolverine` activity
+source and `Wolverine*` meters.
+
+## 9) Example Microchip API calls
 
 Create microchip:
 

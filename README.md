@@ -1,407 +1,319 @@
-<div align="center">
+# Net Vertical Slice Templates
 
-# 🥷 Net Vertical Slice
+Production-oriented .NET templates for building ASP.NET Core Web APIs with
+Wolverine, Vertical Slice Architecture, Entity Framework Core, FluentValidation,
+and Mapster.
 
-### Production-ready `dotnet new` templates for ASP.NET Core Web APIs
+The package provides two coordinated templates:
 
-**Wolverine CQRS · Vertical Slice Architecture · EF Core · FluentValidation · Mapster**
+- `vsa-webapi`: creates a complete Web API with production infrastructure.
+- `vsa-feature`: adds a full vertical slice to an existing project.
 
-Ship a clean, opinionated .NET Web API in minutes — not days. This repository provides the `dotnet new` templates and an AI skill that scaffolds a complete Vertical Slice Architecture backend, with all the boilerplate handled for you.
+The generated application is ready to build immediately and keeps infrastructure,
+authentication, observability, and feature code separated from the composition root.
 
-<br />
+## Why use this template?
 
-[![GitHub stars](https://img.shields.io/github/stars/SaadAlsaree/net-vertical-slice?style=social&label=★%20Stars)](https://github.com/SaadAlsaree/net-vertical-slice/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/SaadAlsaree/net-vertical-slice?style=social&label=Forks)](https://github.com/SaadAlsaree/net-vertical-slice/fork)
-[![License](https://img.shields.io/github/license/SaadAlsaree/net-vertical-slice?color=blue)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/SaadAlsaree/net-vertical-slice?color=brightgreen&label=last%20commit)](https://github.com/SaadAlsaree/net-vertical-slice/commits/main)
-[![Issues](https://img.shields.io/github/issues/SaadAlsaree/net-vertical-slice?color=orange)](https://github.com/SaadAlsaree/net-vertical-slice/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/SaadAlsaree/net-vertical-slice?color=blueviolet)](https://github.com/SaadAlsaree/net-vertical-slice/pulls)
+| Area | Included capability |
+|---|---|
+| Architecture | Vertical Slice Architecture with command, query, handler, endpoint, and validator conventions |
+| Messaging | Wolverine CQRS, HTTP endpoints, middleware, and generated handler code |
+| Validation | FluentValidation executed before handler dispatch with ProblemDetails responses |
+| Persistence | EF Core with PostgreSQL, SQL Server, or SQLite |
+| Data integrity | Audit fields, soft delete, optimistic concurrency, and entity configurations |
+| Authentication | Choose no authentication, Keycloak JWT, or ASP.NET Core Identity with local JWT |
+| Security | Per-user and per-IP rate limiting with stricter authentication policies |
+| API contracts | Standard `Response<T>`, typed `Error`, `Result<T>`, and paginated results |
+| Mapping | Mapster registration and projection conventions |
+| Documentation | Scalar or Swagger/OpenAPI |
+| Caching | Optional ASP.NET Core output caching |
+| Observability | Optional OpenTelemetry traces and metrics through OTLP |
+| Logging | Structured Serilog configuration |
+| Operations | Liveness and readiness health endpoints |
+| Production | Multi-stage Docker build with pre-generated Wolverine code |
+| Developer experience | Central package management, Visual Studio options, sample feature, tests, and bundled AI guidance |
 
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Wolverine](https://img.shields.io/badge/Wolverine-5.1-512BD4)](https://wolverinefx.net/)
-[![EF Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4)](https://learn.microsoft.com/ef/)
-[![C#](https://img.shields.io/badge/C%23-13-239120?logo=csharp&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
-[![Template Version](https://img.shields.io/badge/template%20version-1.1.0-brightgreen)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/templates/NetVerticalSlice.Templates.csproj)
+## Design principles
 
-<br />
+- Feature code is organized by business use case, not by technical layer.
+- `Program.cs` remains a small composition root.
+- Infrastructure registration is split into focused `DependencyInjection` extensions.
+- Authentication providers are isolated: the generated project contains only the
+  selected provider's files, packages, and configuration.
+- Normal Wolverine endpoints receive global rate limiting automatically.
+- Production builds use static Wolverine code instead of runtime compilation.
+- Configuration values can be overridden with standard ASP.NET Core configuration
+  and environment variables.
 
-[**🚀 Quick Start**](#-quick-start) ·
-[**📦 Templates**](#-templates) ·
-[**🏛️ Architecture**](#️-architecture) ·
-[**📖 Docs**](./docs/examples.md) ·
-[**🤝 Contributing**](#-contributing)
+## Requirements
 
-</div>
+- .NET 10 SDK
 
-<br />
-
-> **What is this?** This repository is **tooling**, not a runnable application. It ships three coordinated things you can use together or independently — a **project template**, a **feature item template**, and an **AI skill** with the full architecture reference.
-
----
-
-## ✨ Features
-
-### Generated Web API (`vsa-webapi`)
-
-| | Feature | What it gives you |
-|---|---------|-------------------|
-| ⚡ | **Wolverine** CQRS + HTTP routing | Mediator pattern, automatic transactions, FluentValidation middleware |
-| 🏛️ | **Vertical Slice Architecture** | Each feature is a self-contained slice: `Command` → `Handler` → `Endpoint` → `Validator` |
-| 🗄️ | **EF Core** with provider choice | PostgreSQL · SQL Server · SQLite |
-| 🗑️ | **Soft-delete by default** | Global query filter + audit interceptor that converts `Delete` → soft-delete |
-| 📦 | **Standardized infrastructure** | `Response<T>` envelope, `Result<T>`/`Error`, `PagedList<T>`, `GlobalExceptionHandler` |
-| 🔄 | **Mapster** mapping | Auto-discovered `IRegister` configs |
-| ✅ | **FluentValidation** | Runs automatically before handlers (no manual `Validate()` calls) |
-| 📝 | **Serilog** structured logging | Console + rolling file |
-| 📚 | **Scalar** or **Swagger** | Modern API documentation UI |
-| 🔐 | **Keycloak JWT** auth (optional) | Production-ready Bearer authentication |
-| 🔐 | **ASP.NET Core Identity** (optional) | Local Identity with JWT Bearer — login/register/refresh/logout endpoints |
-| ⚡ | **Output caching** (optional) | ASP.NET Core output caching middleware |
-| 🔧 | **Central Package Management** | `Directory.Packages.props` for version control |
-
-### Feature template (`vsa-feature`)
-
-> ✂️ Generates a **complete CRUD feature in a single command** — 22 files.
-
-```
-Entity + EF Configuration + 5 operations (Create, GetById, GetList, Update, SoftDelete)
-   ↳ each with Command/Query, Handler, Endpoint, Validator/ViewModel
-   + Mapster config
-```
-
----
-
-## 🚀 Quick Start
-
-### 1. Install the templates
+## Install
 
 ```bash
-# From NuGet (recommended)
 dotnet new install NetVerticalSlice.Templates
 ```
 
-**…or install from source** (latest, unreleased changes):
+List the installed templates:
 
 ```bash
-# Clone the repository
-git clone https://github.com/SaadAlsaree/net-vertical-slice.git
-cd net-vertical-slice
-
-# Install both templates from the local clone
-dotnet new install ./templates/vsa-webapi
-dotnet new install ./templates/vsa-feature
+dotnet new list vsa
 ```
 
-### 2. Create your API
+## Create a Web API
 
 ```bash
-dotnet new vsa-webapi -n MyApi -D PostgreSQL -A Scalar -C OutputCache -Au None
-cd MyApi
+dotnet new vsa-webapi \
+  -n Store.Api \
+  -D PostgreSQL \
+  -A Scalar \
+  -C OutputCache \
+  -Au Identity \
+  --Observability OpenTelemetry
+```
+
+Then run:
+
+```bash
+cd Store.Api
 dotnet restore
-```
-
-### 3. Configure the database & migrate
-
-```bash
 dotnet ef migrations add InitialCreate -o Data/Migrations
 dotnet ef database update
-```
-
-### 4. Run
-
-```bash
 dotnet run
 ```
 
-Open **http://localhost:5000/scalar/v1** — you'll see a working `Samples` API (the `SampleFeature` shipped with the template). 🎉
+For Scalar, open `/scalar/v1`. For Swagger, open `/swagger`.
 
-### 5. Scaffold a real feature
+## Project template options
 
-```bash
-dotnet new vsa-feature -n Product \
-  --ResourceName products \
-  --Category Catalog \
-  --RootNamespace MyApi \
-  --DbContext AppDbContext \
-  --output .
-```
-
-Register the `DbSet`, migrate, and you have a full `/api/products` CRUD endpoint. See [**📖 examples.md**](./docs/examples.md) for the complete walkthrough.
-
----
-
-## 📦 Templates
-
-### `vsa-webapi` — Project Template
-
-Scaffolds a complete, production-ready Web API from scratch.
-
-```bash
-dotnet new vsa-webapi -n <ProjectName> [options]
-```
-
-| Option | Short | Default | Choices |
-|--------|:-----:|---------|---------|
-| `--Framework` | `-F` | `net10.0` | `net10.0`, `net9.0` |
+| Option | Short name | Default | Choices |
+|---|:---:|---|---|
+| `--Framework` | `-F` | `net10.0` | `net10.0` |
 | `--DbProvider` | `-D` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite` |
 | `--ApiDocsTool` | `-A` | `Scalar` | `Scalar`, `Swagger` |
 | `--CacheTool` | `-C` | `OutputCache` | `OutputCache`, `None` |
 | `--AuthProvider` | `-Au` | `None` | `None`, `Keycloak`, `Identity` |
+| `--Observability` | — | `None` | `None`, `OpenTelemetry` |
 
-> These options are also exposed in the **Visual Studio / Rider New Project dialog** via `.template.config/ide.host.json`.
+These choices are also available in the Visual Studio and Rider new-project
+experience.
 
-<details>
-<summary><b>🖼️ See it in Visual Studio</b></summary>
+### Authentication choices
 
-The template appears in the **Create a new project** dialog and exposes all configuration options through the wizard:
+| Choice | Generated result |
+|---|---|
+| `None` | No authentication files, packages, claims, or provider settings |
+| `Keycloak` | JWT Bearer authentication and Keycloak configuration only |
+| `Identity` | ASP.NET Core Identity, JWT generation, refresh tokens, and authentication endpoints |
 
-<p align="center">
-  <img src="./image/vsa-wizard.png" alt="Wolverine VSA Web API template in the Visual Studio New Project dialog" width="720" />
-</p>
+Identity projects include:
 
-<p align="center">
-  <em>Select the template, then choose your database provider, API docs tool, caching, and authentication provider in the next step.</em>
-</p>
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
 
-<p align="center">
-  <img src="./image/vsa-wizard-config.png" alt="Configuring VSA template options in the Visual Studio wizard" width="720" />
-</p>
+### Database choices
 
-</details>
+The selected database provider controls the EF Core package, compile symbol, and
+generated connection strings. The application uses `DbContextPool`, configuration
+classes, audit interception, and a global soft-delete filter.
 
-### `vsa-feature` — Item Template
+### Rate limiting
 
-Generates a full CRUD feature inside an existing VSA project.
+Rate limiting is enabled in every generated project.
 
-```bash
-dotnet new vsa-feature -n <EntityName> [options] --output .
-```
+| Traffic | Default policy |
+|---|---|
+| Authenticated user | Token bucket: 60 tokens, replenished by 10 every 10 seconds |
+| Anonymous client | Sliding window: 120 requests per minute, partitioned by IP |
+| Identity login | 10 requests per 5 minutes per IP |
+| Identity registration | 5 requests per 15 minutes per IP |
+| Identity token refresh | 30 requests per minute per IP |
 
-| Option | Required | Default | Description |
-|--------|:--------:|---------|-------------|
-| `-n` / `--name` | ✅ | — | Entity name in PascalCase (e.g., `Product`) |
-| `--ResourceName` | ✅ | — | API resource in kebab-case (e.g., `products`) |
-| `--Category` | ❌ | `Core` | Entity category/namespace (e.g., `Catalog`) |
-| `--RootNamespace` | ❌ | `MyApp` | Project root namespace |
-| `--DbContext` | ❌ | `AppDbContext` | DbContext class name |
+Rejected requests return HTTP `429`, a `Retry-After` header, and the standard
+response envelope. Limits can be changed under `RateLimiting` in
+`appsettings.json`.
 
-**Generates 22 files:**
+### Observability
 
-```
-Data/Entities/{Category}/{Entity}.cs
-Data/Configuration/{Entity}Configuration.cs
-Features/{Entity}Feature/
-├── Create{Entity}/      Command · Handler · Endpoint · Validator
-├── GetById{Entity}/     Query · Handler · Endpoint · ViewModel
-├── GetList{Entity}/     Query · Handler · Endpoint · ViewModel
-├── Update{Entity}/      Command · Handler · Endpoint · Validator
-└── SoftDelete{Entity}/  Command · Handler · Endpoint
-Mappings/{Entity}MappingConfig.cs
-```
+When `--Observability OpenTelemetry` is selected, the project includes:
 
-<details>
-<summary><b>📋 Post-generation steps</b></summary>
+- ASP.NET Core request traces and metrics.
+- .NET runtime metrics.
+- Wolverine activity and meter sources.
+- ASP.NET Core rate-limiting metrics.
+- OTLP export configured through standard OpenTelemetry environment variables.
 
-The generated handlers use `_db.Set<{Entity}>()`, so the project compiles immediately. To persist data:
-
-1. **Register the DbSet** in `Data/AppDbContext.cs`:
-   ```csharp
-   public DbSet<Product> Products => Set<Product>();
-   ```
-2. **Fix irregular plurals** if needed (e.g., `Categories`, not `Categorys`).
-3. **Migrate:**
-   ```bash
-   dotnet ef migrations add AddProduct -o Data/Migrations
-   dotnet ef database update
-   ```
-</details>
-
-> **💡 Naming tip:** The entity name (`-n`) and URL resource (`--ResourceName`) are independent. For irregular plurals, pair them carefully — e.g. `-n Category --ResourceName categories`. These exact pairs are covered by the template test suite.
-
----
-
-## 🏛️ Architecture
-
-Code is organized **by feature**, not by technical layer. Each feature is a self-contained vertical slice:
-
-```
-HTTP Request
-   │
-   ▼
-Endpoint (Wolverine.Http)         ← [WolverinePost/Get/Put/Delete] + OpenAPI annotations
-   │  dispatches via IMessageBus
-   ▼
-FluentValidation middleware       ← runs automatically before the handler
-   │
-   ▼
-Handler (sealed, primary-ctor DI)← business logic · AppDbContext · IMapper
-   │
-   ▼
-EF Core (AppDbContext)            ← entities, configs, soft-delete filter, audit interceptor
-   │
-   ▼
-Response<T>                       ← standardized envelope returned to the client
-```
-
-### Core infrastructure (shipped in every project)
-
-| Component | Responsibility |
-|-----------|---------------|
-| **`Response<T>`** | API envelope: `Succeeded`, `Data`, `Message`, `Code`, `Errors` |
-| **`Result<T>` / `Error`** | Internal domain result pattern with typed errors (`NotFound`, `Conflict`, `Forbidden`…) |
-| **`PagedList<T>`** | Pagination with `MaxPageSize = 200` + `HasPreviousPage`/`HasNextPage` |
-| **`BaseEntity`** | `Id`, audit fields, soft-delete fields, `[Timestamp] RowVersion` |
-| **`AuditSaveChangesInterceptor`** | Stamps `CreatedAt`/`LastUpdateAt`, converts `Delete` → soft-delete |
-| **`GlobalExceptionHandler`** | Maps exceptions → HTTP status, adds `X-Correlation-ID` to every error |
-| **`QueryableExtensions.ApplySort`** | Dynamic, case-insensitive property sorting |
-
-### Technology stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| ASP.NET Core | .NET 10 | Web framework |
-| WolverineFx (+ Http, FluentValidation) | 5.1.0 | CQRS mediator & HTTP routing |
-| EF Core (+ provider) | 10.0.0 | ORM |
-| FluentValidation | 11.10.0 | Input validation |
-| Mapster (+ DependencyInjection) | 7.4.0 / 1.0.1 | Object mapping |
-| Serilog (Console, File) | 9.0.0 / 6.0.0 | Structured logging |
-| Scalar.AspNetCore | 2.1.3 | API reference UI |
-
----
-
-## 📂 Project Structure
-
-```
-net-vertical-slice/
-├── SKILL.md                          # AI skill: full VSA pattern reference
-├── README.md                         # This file
-├── image/                            # README screenshots
-├── docs/                             # Extended documentation
-│   ├── examples.md                   # End-to-end walkthroughs
-│   ├── CONTRIBUTING.md               # Contribution guide
-│   └── IMPROVEMENTS.md               # Improvement suggestions
-│
-└── templates/
-    ├── NetVerticalSlice.Templates.csproj  # NuGet pack project (v1.1.0)
-    │
-    ├── vsa-webapi/                        # 📦 PROJECT TEMPLATE
-    │   ├── .template.config/              #   template.json, ide.host.json, icon
-    │   ├── Program.cs                     #   Wolverine + EF + Mapster + FV wiring
-    │   ├── VsaTemplate.csproj             #   conditional PackageReferences
-    │   ├── Directory.Packages.props       #   central package versions
-    │   ├── Data/                          #   AppDbContext, BaseEntity, audit, Sample
-    │   ├── Features/SampleFeature/        #   full CRUD sample (5 slices)
-    │   ├── Infrastructure/Common/         #   Response, Result, Error, PagedList
-    │   ├── Extensions/                    #   GlobalExceptionHandler, Queryable, Auth
-    │   └── Mappings/                      #   SampleMappingConfig
-    │
-    ├── vsa-feature/                       # ✂️ ITEM TEMPLATE
-    │   ├── .template.config/template.json #   symbols & post-actions
-    │   ├── Data/                          #   entity + EF config templates
-    │   ├── Features/__Entity__Feature/    #   5 CRUD slice templates
-    │   └── Mappings/                      #   Mapster config template
-    │
-    └── TemplateTests/                     # ✅ xUnit verification harness
-```
-
----
-
-## 📚 Documentation
-
-| Document | What's inside |
-|----------|---------------|
-| [**📖 docs/examples.md**](./docs/examples.md) | 7 end-to-end walkthroughs: zero-to-running, scaffolding features, annotated anatomy, customizations, cURL calls, Keycloak, SQLite |
-| [**🤖 SKILL.md**](./SKILL.md) | The AI skill: every CQRS pattern, naming conventions, code-style rules, best-practices checklist |
-| [**🤝 docs/CONTRIBUTING.md**](./docs/CONTRIBUTING.md) | How to edit templates, the verification workflow, packaging & publishing |
-| [**💡 docs/IMPROVEMENTS.md**](./docs/IMPROVEMENTS.md) | Prioritized findings & suggestions for docs and DX |
-
----
-
-## 🛠️ Commands Reference
+Set the collector endpoint before running:
 
 ```bash
-# Create a new VSA Web API
-dotnet new vsa-webapi -n <Name> [-F net10.0|net9.0] [-D PostgreSQL|SqlServer|Sqlite] \
-                              [-A Scalar|Swagger] [-C OutputCache|None] [-Au None|Keycloak|Identity]
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+```
 
-# Generate a CRUD feature inside an existing project
-dotnet new vsa-feature -n <Entity> --ResourceName <kebab> [--Category Core] \
-                         [--RootNamespace MyApp] [--DbContext AppDbContext] --output .
+## Generated architecture
 
-# Verify templates build (contributors)
+```text
+Store.Api/
+├── DependencyInjection/
+│   ├── ApiServiceCollectionExtensions.cs
+│   ├── ApplicationServiceCollectionExtensions.cs
+│   ├── AuthenticationServiceCollectionExtensions.cs
+│   ├── InfrastructureServiceCollectionExtensions.cs
+│   ├── MessagingHostBuilderExtensions.cs
+│   ├── ObservabilityServiceCollectionExtensions.cs
+│   ├── RateLimitingServiceCollectionExtensions.cs
+│   └── WebApplicationExtensions.cs
+├── Data/
+│   ├── AppDbContext.cs
+│   ├── Common/
+│   ├── Configuration/
+│   └── Entities/
+├── Features/
+│   └── SampleFeature/
+├── Infrastructure/
+│   ├── Common/
+│   └── RateLimiting/
+├── Mappings/
+├── Models/
+├── Program.cs
+├── Dockerfile
+├── Directory.Packages.props
+└── appsettings.json
+```
+
+The request flow is:
+
+```text
+HTTP request
+  -> authentication
+  -> rate limiting
+  -> authorization
+  -> Wolverine HTTP endpoint
+  -> FluentValidation
+  -> command/query handler
+  -> EF Core
+  -> standardized response
+```
+
+Authentication and authorization steps are omitted when `AuthProvider` is `None`.
+
+## Add a vertical slice
+
+Use `vsa-feature` inside an existing project:
+
+```bash
+dotnet new vsa-feature \
+  -n Product \
+  --ResourceName products \
+  --Category Catalog \
+  --RootNamespace Store.Api \
+  --DbContext AppDbContext \
+  --output .
+```
+
+The template generates Create, GetById, GetList, Update, and SoftDelete slices,
+plus Mapster configuration. Each slice follows the same structure used by the
+project template.
+
+If the entity does not exist, include it and its EF configuration:
+
+```bash
+dotnet new vsa-feature \
+  -n Product \
+  --ResourceName products \
+  --Category Catalog \
+  --RootNamespace Store.Api \
+  --DbContext AppDbContext \
+  --GenerateEntity \
+  --output .
+```
+
+### Feature template options
+
+| Option | Required | Default | Purpose |
+|---|:---:|---|---|
+| `-n`, `--name` | Yes | — | Entity name in PascalCase |
+| `--ResourceName` | Yes | — | Kebab-case API resource name |
+| `--Category` | No | `Core` | Entity category and namespace |
+| `--RootNamespace` | No | `MyApp` | Target project namespace |
+| `--DbContext` | No | `AppDbContext` | EF Core context name |
+| `--GenerateEntity` | No | `false` | Generate the entity and EF configuration |
+
+Generated commands and view models are field-agnostic. Replace the marked
+`TODO` fields with properties that match the target domain, register the `DbSet`,
+and create a migration.
+
+## Production build
+
+The generated Dockerfile writes Wolverine handlers during the SDK stage and
+publishes without runtime compilation, Roslyn workspaces, or EF design-time
+packages.
+
+```bash
+docker build \
+  --build-arg APP_ENVIRONMENT=Production \
+  -t store-api:latest .
+```
+
+For a non-container production publish:
+
+```bash
+dotnet run \
+  -c Release \
+  -p:IncludeWolverineRuntimeCompilation=true \
+  -- codegen write
+
+dotnet publish \
+  -c Release \
+  -p:IncludeWolverineRuntimeCompilation=false \
+  -p:IncludeEfDesignTimePackages=false
+```
+
+## Health endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `/health/live` | Confirms that the process is running |
+| `/health/ready` | Confirms that the application is ready to receive traffic |
+
+Health endpoints are anonymous and excluded from rate limiting.
+
+## Template verification
+
+The repository includes automated tests that generate projects for every database
+and authentication choice, build them, publish them with pre-generated Wolverine
+code, and verify runtime validation and rate-limiting behavior.
+
+```bash
 dotnet test templates/TemplateTests/TemplateTests.csproj --configuration Release
-
-# Pack into a NuGet package (maintainers)
-dotnet pack templates/NetVerticalSlice.Templates.csproj -c Release
 ```
 
-<details>
-<summary><b>🔧 Uninstall</b></summary>
+Create a NuGet package:
 
 ```bash
-# If installed from NuGet
-dotnet new uninstall NetVerticalSlice.Templates
-
-# If installed from a local path
-dotnet new uninstall ./templates/vsa-webapi
-dotnet new uninstall ./templates/vsa-feature
+dotnet pack templates/NetVerticalSlice.Templates.csproj --configuration Release
 ```
-</details>
 
----
+## Uninstall
 
-## 🤝 Contributing
+```bash
+dotnet new uninstall NetVerticalSlice.Templates
+```
 
-Contributions are welcome — new slices, additional providers, docs fixes, or test coverage.
+## Additional documentation
 
-1. **Fork & branch** off `main` — [**fork the repo**](https://github.com/SaadAlsaree/net-vertical-slice/fork).
-2. **Make your change** in the relevant template under `templates/`.
-3. **Verify locally** — the fastest check is the test harness:
-   ```bash
-   dotnet test templates/TemplateTests/TemplateTests.csproj --configuration Release
-   ```
-4. **Keep options consistent** — if you add a `template.json` choice, update `ide.host.json`, the conditional `PackageReference`s, and `#if` blocks.
-5. **Open a [pull request](https://github.com/SaadAlsaree/net-vertical-slice/pulls).**
+The repository contains:
 
-Found a bug or have an idea? [**Open an issue**](https://github.com/SaadAlsaree/net-vertical-slice/issues/new).
+- `docs/examples.md`: end-to-end usage examples.
+- `docs/CONTRIBUTING.md`: contribution and verification workflow.
+- `docs/IMPROVEMENTS.md`: planned improvements.
+- `SKILL.md`: detailed architecture and coding conventions for AI-assisted development.
 
-See [**docs/CONTRIBUTING.md**](./docs/CONTRIBUTING.md) for the full guide.
+Generated projects also include the reusable skill under
+`.agents/skills/net-vertical-slice/`.
 
-> **🔒 Security:** never commit API keys or secrets. NuGet publishing uses the `NUGET_API_KEY` environment variable only.
+## License
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see [LICENSE](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE) for details.
-
----
-
-## 👤 Author
-
-**Saad Alsaree**
-
-[![GitHub](https://img.shields.io/badge/GitHub-SaadAlsaree-181717?logo=github&logoColor=white)](https://github.com/SaadAlsaree)
-
----
-
-## 🙏 Acknowledgements
-
-Built on outstanding open-source work:
-
-- [**Wolverine**](https://wolverinefx.net/) — CQRS & messaging
-- [**EF Core**](https://learn.microsoft.com/ef/) — Object-relational mapping
-- [**FluentValidation**](https://fluentvalidation.net/) — Input validation
-- [**Mapster**](https://github.com/MapsterMapper/Mapster) — Object mapping
-- [**Serilog**](https://serilog.net/) — Structured logging
-- [**Scalar**](https://github.com/scalar/scalar) & [**Swagger (Swashbuckle)**](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) — API documentation (your choice)
-
----
-
-<div align="center">
-
-<sub>Built with ❤️ for the .NET community</sub>
-
-**[⬆ Back to top](#top)**
-
-</div>
+MIT

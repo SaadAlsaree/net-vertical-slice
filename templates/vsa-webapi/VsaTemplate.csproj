@@ -9,6 +9,9 @@
     <ApiDocsTool>__APIDOCS_TOOL__</ApiDocsTool>
     <CacheTool>__CACHE_TOOL__</CacheTool>
     <AuthProvider>__AUTH_PROVIDER__</AuthProvider>
+    <Observability>__OBSERVABILITY__</Observability>
+    <IncludeEfDesignTimePackages
+      Condition="'$(IncludeEfDesignTimePackages)' == ''">true</IncludeEfDesignTimePackages>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DbProvider)' == 'PostgreSQL' Or '$(DbProvider)' == '__DB_PROVIDER__'">
@@ -47,6 +50,10 @@
     <DefineConstants>$(DefineConstants);AUTH_ENABLED</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Observability)' == 'OpenTelemetry'">
+    <DefineConstants>$(DefineConstants);OTEL_ENABLED</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="WolverineFx.FluentValidation" />
@@ -56,7 +63,15 @@
     <PackageReference Include="Mapster.DependencyInjection" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+    <PackageReference
+      Include="Microsoft.EntityFrameworkCore.Tools"
+      Condition="'$(IncludeEfDesignTimePackages)' == 'true'">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference
+      Include="Microsoft.EntityFrameworkCore.Design"
+      Condition="'$(IncludeEfDesignTimePackages)' == 'true'">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -94,6 +109,21 @@
   <ItemGroup Condition="'$(AuthProvider)' == 'Identity'">
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Observability)' == 'OpenTelemetry'">
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IncludeWolverineRuntimeCompilation)' == 'true'">
+    <PackageReference Include="WolverineFx.RuntimeCompilation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Internal\Generated\**\*.cs" Watch="false" />
   </ItemGroup>
 
 </Project>

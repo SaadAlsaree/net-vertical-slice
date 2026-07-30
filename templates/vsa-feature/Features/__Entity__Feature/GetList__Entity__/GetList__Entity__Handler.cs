@@ -16,15 +16,14 @@ public sealed class GetList__Entity__Handler(__DbContext__ _db, IMapper _mapper)
     {
         var query = _db.Set<__Entity__>().AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-        {
-            var term = request.SearchTerm.ToLower();
-            query = query.Where(e =>
-                e.Name.ToLower().Contains(term) ||
-                (e.Description != null && e.Description.ToLower().Contains(term)));
-        }
+        // TODO(__Entity__): add field-level search filtering, e.g.:
+        //   if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        //   {
+        //       var term = request.SearchTerm.ToLower();
+        //       query = query.Where(e => e.NameAr.ToLower().Contains(term) || e.Code.Contains(term));
+        //   }
 
-        query = query.ApplySort(request.SortBy, request.OrderBy, defaultSortBy: "Name");
+        query = query.ApplySort(request.SortBy, request.OrderBy, defaultSortBy: "Id");
 
         var projectedQuery = query
             .ProjectToType<GetList__Entity__ViewModel>(_mapper.Config);

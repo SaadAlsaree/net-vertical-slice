@@ -1,54 +1,53 @@
-#if AUTH_KEYCLOAK
-using System.Security.Claims;
-using VsaTemplate.Models;
+#if AUTH_IDENTITY
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using VsaTemplate.Data;
+using VsaTemplate.Data.Entities;
+using VsaTemplate.Extensions;
+using VsaTemplate.Models;
 
-namespace VsaTemplate.Extensions;
+namespace VsaTemplate.DependencyInjection;
 
-public static class AuthExtensions
+public static class IdentityAuthenticationExtensions
 {
-    public static IServiceCollection AddKeycloakAuthentication(
+    public static IServiceCollection AddIdentityAuthentication(
         this IServiceCollection services,
-        KeycloakSettings keycloakSettings,
-        IHostEnvironment environment)
+        JwtSettings jwtSettings)
     {
+        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = false;
+            })
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.Authority = keycloakSettings.Issuer;
-                options.MetadataAddress = $"{keycloakSettings.BaseUrl}/realms/{keycloakSettings.Realm}/.well-known/openid-configuration";
-                options.Audience = keycloakSettings.Audience;
-                options.RequireHttpsMetadata = keycloakSettings.Issuer.StartsWith("https://");
-                options.RefreshOnIssuerKeyNotFound = true;
-
-                if (environment.IsDevelopment() &&
-                    keycloakSettings.BaseUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                {
-                    options.BackchannelHttpHandler = new HttpClientHandler
-                    {
-                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                    };
-                }
+                options.Audience = jwtSettings.Audience;
+                options.RequireHttpsMetadata = jwtSettings.Issuer.StartsWith("https://");
+                options.MapInboundClaims = false;
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuers =
-                    [
-                        keycloakSettings.Issuer,
-                        keycloakSettings.InternalIssuer
-                    ],
+                    ValidIssuer = jwtSettings.Issuer,
                     ValidateAudience = true,
-                    ValidAudiences = [keycloakSettings.Audience, "account"],
+                    ValidAudience = jwtSettings.Audience,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        System.Text.Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
                     ClockSkew = TimeSpan.Zero,
                     RoleClaimType = AuthClaims.Roles,
                     NameClaimType = AuthClaims.UserLogin,
                 };
-
-                options.MapInboundClaims = false;
 
                 options.Events = new JwtBearerEvents
                 {

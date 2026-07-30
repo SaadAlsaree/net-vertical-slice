@@ -18,7 +18,7 @@ public static class GetList__Entity__Endpoint
         [FromQuery] int? page = 1,
         [FromQuery] int? pageSize = 10,
         [FromQuery] string? searchTerm = null,
-        [FromQuery] string? sortBy = "Name",
+        [FromQuery] string? sortBy = "Id", // TODO(__Entity__): change default sort to your field, e.g. "NameAr"
         [FromQuery] string? orderBy = "asc")
     {
         var query = new GetList__Entity__Query(page, pageSize, searchTerm, sortBy, orderBy);
