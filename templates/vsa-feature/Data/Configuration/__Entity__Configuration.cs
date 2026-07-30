@@ -11,13 +11,11 @@ public class __Entity__Configuration : IEntityTypeConfiguration<__Entity__>
         builder.ToTable("__resource__");
         builder.HasKey(e => e.Id);
 
-        builder.HasIndex(e => e.Name).IsUnique();
-
-        builder.Property(e => e.Name)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(e => e.Description)
-            .HasMaxLength(500);
+        // TODO(__Entity__): configure your table columns, indexes, and relationships here.
+        // Example:
+        //   builder.HasIndex(e => e.Code).IsUnique();
+        //   builder.Property(e => e.Code).IsRequired().HasMaxLength(10);
+        //   builder.Property(e => e.NameAr).IsRequired().HasMaxLength(50);
+        //   builder.Property(e => e.NameEn).HasMaxLength(50);
     }
 }

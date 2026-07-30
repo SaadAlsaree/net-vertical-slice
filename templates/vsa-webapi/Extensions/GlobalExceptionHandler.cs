@@ -38,35 +38,49 @@ public class GlobalExceptionHandler : IExceptionHandler
                             Property = e.PropertyName,
                             Message = e.ErrorMessage
                         }).ToList());
-                _logger.LogInformation(exception, "Validation failed: {Message}", exception.Message);
+                _logger.LogInformation(
+                    "Validation failed for {Path} with {ErrorCount} error(s)",
+                    httpContext.Request.Path,
+                    validationException.Errors.Count());
                 break;
 
             case NotFoundException:
                 statusCode = HttpStatusCode.NotFound;
                 response = Response<object>.Failure(
                     Error.NotFound("Resource.NotFound", exception.Message));
-                _logger.LogError(exception, "Resource not found: {Message}", exception.Message);
+                _logger.LogInformation(
+                    "Resource not found at {Path}: {Message}",
+                    httpContext.Request.Path,
+                    exception.Message);
                 break;
 
             case ForbiddenException:
                 statusCode = HttpStatusCode.Forbidden;
                 response = Response<object>.Failure(
                     Error.Forbidden("Access.Forbidden", exception.Message));
-                _logger.LogError(exception, "Forbidden: {Message}", exception.Message);
+                _logger.LogWarning(
+                    "Forbidden request at {Path}: {Message}",
+                    httpContext.Request.Path,
+                    exception.Message);
                 break;
 
             case UnauthorizedAccessException:
                 statusCode = HttpStatusCode.Unauthorized;
                 response = Response<object>.Failure(
                     Error.Failure("Auth.Unauthorized", "Unauthorized access"));
-                _logger.LogError(exception, "Unauthorized: {Message}", exception.Message);
+                _logger.LogWarning(
+                    "Unauthorized request at {Path}",
+                    httpContext.Request.Path);
                 break;
 
             case DomainException domainEx:
                 statusCode = MapDomainError(domainEx.ErrorType);
                 response = Response<object>.Failure(
                     new Error(domainEx.ErrorType, domainEx.ErrorCode, domainEx.Message));
-                _logger.LogError(exception, "Domain error: {Message}", exception.Message);
+                _logger.LogInformation(
+                    "Domain request failure at {Path}: {Code}",
+                    httpContext.Request.Path,
+                    domainEx.ErrorCode);
                 break;
 
             default:

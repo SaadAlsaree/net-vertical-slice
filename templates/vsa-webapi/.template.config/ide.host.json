@@ -140,6 +140,36 @@
           }
         }
       ]
+    },
+    {
+      "id": "Observability",
+      "name": {
+        "text": "Observability"
+      },
+      "description": {
+        "text": "Choose whether to export ASP.NET Core and Wolverine traces and metrics through OpenTelemetry."
+      },
+      "isVisible": true,
+      "choices": [
+        {
+          "id": "None",
+          "name": {
+            "text": "No Telemetry"
+          },
+          "description": {
+            "text": "Do not add an observability exporter."
+          }
+        },
+        {
+          "id": "OpenTelemetry",
+          "name": {
+            "text": "OpenTelemetry"
+          },
+          "description": {
+            "text": "Export traces and metrics through the OTLP protocol."
+          }
+        }
+      ]
     }
   ]
 }

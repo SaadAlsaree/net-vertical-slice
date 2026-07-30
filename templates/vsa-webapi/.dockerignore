@@ -1,0 +1,17 @@
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/.idea
+**/*.*proj.user
+**/TestResults
+**/Logs
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.pfx
+.git
+.github
+.agents
+Internal/Generated

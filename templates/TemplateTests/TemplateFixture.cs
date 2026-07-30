@@ -24,7 +24,10 @@ public sealed class TemplateFixture : IDisposable
         return path;
     }
 
-    public void RunDotnet(string arguments, string workingDirectory)
+    public void RunDotnet(
+        string arguments,
+        string workingDirectory,
+        IReadOnlyDictionary<string, string?>? environment = null)
     {
         using var process = new Process
         {
@@ -39,6 +42,14 @@ public sealed class TemplateFixture : IDisposable
                 CreateNoWindow = true
             }
         };
+
+        if (environment is not null)
+        {
+            foreach (var (key, value) in environment)
+            {
+                process.StartInfo.Environment[key] = value;
+            }
+        }
 
         process.Start();
 

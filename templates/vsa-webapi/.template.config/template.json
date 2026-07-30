@@ -17,8 +17,7 @@
       "type": "parameter",
       "datatype": "choice",
       "choices": [
-        { "choice": "net10.0", "description": ".NET 10" },
-        { "choice": "net9.0", "description": ".NET 9" }
+        { "choice": "net10.0", "description": ".NET 10 LTS" }
       ],
       "defaultValue": "net10.0",
       "replaces": "net10.0"
@@ -69,6 +68,17 @@
       "description": "Authentication provider",
       "replaces": "__AUTH_PROVIDER__"
     },
+    "Observability": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        { "choice": "None", "description": "No telemetry exporter" },
+        { "choice": "OpenTelemetry", "description": "OpenTelemetry traces and metrics through OTLP" }
+      ],
+      "defaultValue": "None",
+      "description": "Application observability",
+      "replaces": "__OBSERVABILITY__"
+    },
     "DB_SQLSERVER": {
       "type": "computed",
       "value": "(DbProvider == \"SqlServer\")"
@@ -100,6 +110,10 @@
     "AUTH_ENABLED": {
       "type": "computed",
       "value": "(AuthProvider == \"Keycloak\" || AuthProvider == \"Identity\")"
+    },
+    "OTEL_ENABLED": {
+      "type": "computed",
+      "value": "(Observability == \"OpenTelemetry\")"
     },
     "ApiDocsLaunchUrl": {
       "type": "generated",
@@ -180,6 +194,39 @@
   },
   "primaryOutputs": [
     { "path": "VsaTemplate.csproj" }
+  ],
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!AUTH_ENABLED)",
+          "exclude": [
+            "Extensions/AuthClaims.cs",
+            "Extensions/CurrentUserExtensions.cs",
+            "Models/CurrentUser.cs"
+          ]
+        },
+        {
+          "condition": "(!AUTH_KEYCLOAK)",
+          "exclude": [
+            "DependencyInjection/KeycloakAuthenticationExtensions.cs",
+            "Models/KeycloakSettings.cs"
+          ]
+        },
+        {
+          "condition": "(!AUTH_IDENTITY)",
+          "exclude": [
+            "DependencyInjection/IdentityAuthenticationExtensions.cs",
+            "Data/Configuration/RefreshTokenConfiguration.cs",
+            "Data/Entities/ApplicationUser.cs",
+            "Data/Entities/RefreshToken.cs",
+            "Features/AuthFeature/**",
+            "Infrastructure/Authentication/**",
+            "Models/JwtSettings.cs"
+          ]
+        }
+      ]
+    }
   ],
   "postActions": [
     {

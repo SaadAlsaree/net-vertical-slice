@@ -63,17 +63,20 @@ dotnet new vsa-webapi -n MyApp
 | Parameter      | Default       | Description                                   |
 | -------------- | ------------- | --------------------------------------------- |
 | `-n`           | directory name | Project name / namespace                       |
-| `-F` / `--Framework` | `net10.0` | `net10.0` or `net9.0`                    |
+| `-F` / `--Framework` | `net10.0` | `net10.0`                                |
 | `-D` / `--DbProvider` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite`   |
 | `-A` / `--ApiDocsTool` | `Scalar` | `Scalar` or `Swagger`                       |
 | `-C` / `--CacheTool` | `OutputCache` | `OutputCache` or `None`                  |
 | `-Au` / `--AuthProvider` | `None` | `None`, `Keycloak`, or `Identity`               |
+| `--Observability` | `None` | `None` or `OpenTelemetry`                          |
 
 #### Generated Structure
 
 ```
 MyApp/
-├── Program.cs                    # Wolverine + EF Core + Mapster + FV setup
+├── Program.cs                    # Minimal composition root
+├── DependencyInjection/          # Messaging, data, auth, API, logging, telemetry
+├── Dockerfile                    # Wolverine codegen + production publish
 ├── MyApp.csproj                  # NuGet packages pre-configured
 ├── appsettings.json / .Development.json
 ├── Data/
@@ -109,6 +112,20 @@ MyApp/
 3. Run `dotnet ef migrations add InitialCreate`
 4. Run `dotnet ef database update`
 5. Run `dotnet run` and open Swagger at `http://localhost:5000/swagger`
+
+Authentication providers are mutually exclusive template outputs. Never keep
+Identity files/configuration when Keycloak or None is selected, and never keep
+Keycloak files/configuration when Identity or None is selected.
+
+For Production, pre-generate Wolverine handlers and publish without runtime
+compilation or EF design-time packages:
+
+```bash
+dotnet run -c Release -p:IncludeWolverineRuntimeCompilation=true -- codegen write
+dotnet publish -c Release \
+  -p:IncludeWolverineRuntimeCompilation=false \
+  -p:IncludeEfDesignTimePackages=false
+```
 
 ---
 
@@ -1068,22 +1085,24 @@ dotnet ef migrations remove --project {ProjectFile}.csproj --startup-project {Pr
 7. **Create Mapping** → `Mappings/{Entity}MappingConfig.cs`
 8. **Test** → Run application and test via Swagger/OpenAPI
 
-### Program.cs Configuration Order
+### Composition Root and Dependency Injection
 
 ```csharp
-// 1. Logging (e.g., Serilog)
-// 2. Configuration binding (appsettings)
-// 3. Authentication (e.g., JWT)
-// 4. External services (project-specific)
-// 5. Database (EF Core DbContextPool)
-// 6. Wolverine configuration (Host.UseWolverine)
-// 7. Framework services (Controllers, OpenApi, etc.)
-// 8. Custom services (Scoped/Singleton/Transient)
-// 9. Mapster configuration
-// 10. CORS
-// 11. Build & Middleware pipeline
-// 12. Run
+// Program.cs only composes named extension methods:
+// 1. Host logging and Wolverine messaging
+// 2. Infrastructure/database services
+// 3. Application/Mapster services
+// 4. Exactly one authentication provider
+// 5. Optional OpenTelemetry
+// 6. API services
+// 7. Middleware and endpoint pipeline
 ```
+
+Keep registrations in `DependencyInjection/`. Wolverine 6 uses strict service
+location, runtime compilation only in Development, static generated code in
+Production, and `UseFluentValidationProblemDetailMiddleware()` at the HTTP
+boundary. Add Wolverine telemetry with activity source `Wolverine` and meters
+matching `Wolverine*`.
 
 ---
 
