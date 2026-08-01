@@ -1,0 +1,38 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Run template tests
+        run: dotnet test templates/TemplateTests/TemplateTests.csproj --configuration Release
+
+      - name: Pack NuGet package
+        run: dotnet pack templates/NetVerticalSlice.Templates.csproj --configuration Release --output ./nupkg
+
+      - name: Upload nupkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg/*.nupkg
+
+      - name: Publish to NuGet.org
+        if: ${{ github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') }}
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
