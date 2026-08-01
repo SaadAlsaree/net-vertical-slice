@@ -4,11 +4,19 @@
     <EnableDefaultItems>false</EnableDefaultItems>
     <PackageType>Template</PackageType>
     <PackageId>NetVerticalSlice.Templates</PackageId>
-    <Version>1.1.2</Version>
-    <Authors>net-vertical-slice</Authors>
-    <Description>Project templates for Net Vertical Slice architecture, including the Wolverine VSA Web API template.</Description>
-    <PackageTags>dotnet-new;template;webapi;vsa;wolverine;cqrs</PackageTags>
+    <Version>2.0.0</Version>
+    <Title>Net Vertical Slice Templates</Title>
+    <Authors>SaadAlsaree</Authors>
+    <Company>SaadAlsaree</Company>
+    <Product>Net Vertical Slice Templates</Product>
+    <Description>Production-oriented ASP.NET Core project and item templates built with Wolverine CQRS, Vertical Slice Architecture (VSA), EF Core, FluentValidation, and Mapster.</Description>
+    <PackageTags>dotnet-new;template;webapi;vsa;wolverine;cqrs;vertical-slice-architecture;aspnetcore</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/SaadAlsaree/net-vertical-slice</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/SaadAlsaree/net-vertical-slice</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>v2.0.0 release introducing Wolverine VSA Web API (.NET 10) and VSA Feature scaffolding templates.</PackageReleaseNotes>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -23,5 +31,6 @@
     <Content Include="vsa-feature\**\*"
              Exclude="vsa-feature\bin\**;vsa-feature\obj\**;vsa-feature\**\bin\**;vsa-feature\**\obj\**" />
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
