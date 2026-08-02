@@ -387,7 +387,9 @@ dotnet new uninstall NetVerticalSlice.Templates
 ## Documentation and support
 
 - [End-to-end usage examples](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/docs/examples.md)
-- [Contribution and verification workflow](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/docs/CONTRIBUTING.md)
+- [Contribution and verification workflow](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/CONTRIBUTING.md)
+- [Security policy and private reporting](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/SECURITY.md)
+- [Short project roadmap](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/ROADMAP.md)
 - [Architecture and AI-assisted coding conventions](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/SKILL.md)
 - [Report a bug or request a feature](https://github.com/SaadAlsaree/net-vertical-slice/issues)
 
