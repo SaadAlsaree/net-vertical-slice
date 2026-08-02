@@ -1,45 +1,53 @@
-# Net Vertical Slice Templates
+# Net Vertical Slice — .NET Starter Platform
 
 [![NuGet](https://img.shields.io/nuget/v/NetVerticalSlice.Templates.svg)](https://www.nuget.org/packages/NetVerticalSlice.Templates/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/NetVerticalSlice.Templates.svg)](https://www.nuget.org/packages/NetVerticalSlice.Templates/)
 [![Template verification](https://github.com/SaadAlsaree/net-vertical-slice/actions/workflows/templates.yml/badge.svg)](https://github.com/SaadAlsaree/net-vertical-slice/actions/workflows/templates.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE)
 
-Generate a buildable .NET 10 Web API in minutes, then add repeatable business
-features without recreating the same endpoint, validation, persistence, and
-response boilerplate.
+Start your next .NET 10 API with architecture, infrastructure, and
+production-minded defaults already working together.
 
-Net Vertical Slice Templates combines Wolverine, Vertical Slice Architecture,
-Entity Framework Core, FluentValidation, and Mapster in two coordinated
-`dotnet new` templates.
+**Net Vertical Slice is an opinionated starter platform for building and evolving
+Wolverine-powered Vertical Slice APIs.** It is delivered through two coordinated
+`dotnet new` generators: one creates the application foundation, and the other keeps
+new business features aligned as the product grows.
 
-> **Production-oriented, not production-complete.** The template provides
-> production-minded infrastructure and safe defaults. Every team must still review
-> authorization, secrets, migrations, proxy configuration, domain validation,
-> auditing, and operational policies before deployment.
+Instead of spending the first stage of a project assembling messaging, validation,
+persistence, authentication, observability, API contracts, and deployment plumbing,
+you begin with a buildable foundation and own the generated source from day one.
 
-## Choose the right template
+> **Build the foundation once. Keep every feature aligned.**
+>
+> The platform is production-oriented, not production-complete. Every team must still
+> review authorization, secrets, migrations, proxy configuration, domain validation,
+> auditing, and operational policies for its deployment.
 
-| Template | Use it when | Generates |
+## One platform, two coordinated generators
+
+| Generator | Role in the platform | Generates |
 |---|---|---|
-| `vsa-webapi` | Starting a new API | A complete ASP.NET Core project with infrastructure, a sample feature, and selectable database, authentication, documentation, caching, and observability |
-| `vsa-feature` | Adding a resource to an existing compatible project | Create, GetById, GetList, Update, and SoftDelete slices, validators, endpoints, handlers, and Mapster configuration |
+| `vsa-webapi` | Establish the foundation | A complete ASP.NET Core project with infrastructure, a sample feature, and selectable database, authentication, documentation, caching, and observability |
+| `vsa-feature` | Grow the application consistently | Create, GetById, GetList, Update, and SoftDelete slices, validators, endpoints, handlers, and Mapster configuration |
 
-Both templates follow the same conventions, so generated features fit the project
-template without introducing another architectural style.
+Together, the generators provide a repeatable path from a new service to a growing
+application without introducing a second architectural style or recreating the same
+feature plumbing.
 
-## Why use this template?
+## Why start with this platform?
 
-- **Organize by use case.** Commands, queries, endpoints, handlers, and validators
-  stay close to the business feature they implement.
-- **Generate only what you select.** Authentication providers, database packages,
-  API documentation, caching, and observability are isolated by template options.
-- **Start with operational essentials.** Structured logging, health checks, rate
+- **Move from setup to business code.** Start with Wolverine messaging, validation,
+  persistence, API contracts, mapping, and operational plumbing already integrated.
+- **Keep architecture consistent as the application grows.** Commands, queries,
+  endpoints, handlers, and validators stay close to the use case they implement.
+- **Own ordinary .NET source.** Generated applications remain readable and editable;
+  the starter platform is not a proprietary runtime your application must depend on.
+- **Choose only the infrastructure you need.** Database, authentication, API
+  documentation, caching, and observability providers are isolated by template options.
+- **Begin with an operational baseline.** Structured logging, health checks, rate
   limiting, ProblemDetails, Docker, and static Wolverine code generation are included.
-- **Keep adding features consistently.** `vsa-feature` produces the same slice
-  structure used by the generated project.
 
-## Included capabilities
+## Platform capabilities
 
 | Area | Included capability |
 |---|---|
@@ -77,7 +85,7 @@ template without introducing another architectural style.
 
 ## What's new in 2.0
 
-Version 2.0 is the major .NET 10 and Wolverine 6 template generation release:
+Version 2.0 is the major .NET 10 and Wolverine 6 starter-platform release:
 
 - A complete `vsa-webapi` project template and coordinated `vsa-feature` item template.
 - Selectable PostgreSQL, SQL Server, or SQLite persistence.
