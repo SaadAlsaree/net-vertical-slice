@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Visual Studio Docker Compose orchestration project.
+  It lives in its own folder because it builds the web project as a reference: sharing the
+  web project's folder would also share bin/ and obj/, and its clean step would delete the
+  web project's build output. The Compose files stay at the project root so that
+  `docker compose up -d` works from there.
+-->
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <DockerPublishLocally>False</DockerPublishLocally>
+    <ProjectGuid>{6F0C2D7A-3B4E-4C1A-9E58-2A7B1D4C8E90}</ProjectGuid>
+    <DockerComposeBaseFilePath>..\docker-compose</DockerComposeBaseFilePath>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/__APIDOCS_LAUNCH_URL__</DockerServiceUrl>
+    <DockerServiceName>api</DockerServiceName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\docker-compose.yml" Link="docker-compose.yml" />
+    <None Include="..\docker-compose.override.yml" Link="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="..\.dockerignore" Link=".dockerignore" />
+    <None Include="..\.env" Link=".env" />
+  </ItemGroup>
+</Project>

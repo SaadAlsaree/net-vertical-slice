@@ -52,3 +52,6 @@ verification/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Solution files: this repository ships .slnx only
+*.sln

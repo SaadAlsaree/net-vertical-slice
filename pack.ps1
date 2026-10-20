@@ -42,7 +42,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "dotnet pack failed."
 }
 
-$nupkg = Get-ChildItem "templates/bin/Release/*.nupkg" | Sort-LastWriteTime -Descending | Select-Object -First 1
+$nupkg = Get-ChildItem "templates/bin/Release/*.nupkg" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
 if ($null -eq $nupkg) {
     Write-Error "No package was produced."

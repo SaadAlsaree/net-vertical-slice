@@ -17,6 +17,7 @@ Template options:
 - `-C|--CacheTool`: `OutputCache`, `None`
 - `-Au|--AuthProvider`: `None`, `Identity`, `Keycloak`
 - `--Observability`: `None`, `OpenTelemetry`
+- `--Docker`: `false`, `true` (Dockerfile, Docker Compose, `.env`)
 
 Authentication choices are isolated. Selecting `None` does not generate authentication
 files, packages, or configuration; selecting `Identity` does not generate Keycloak
@@ -104,7 +105,7 @@ and `[DisableRateLimiting]` for operational endpoints such as health checks.
 
 ## 7) Production build
 
-The included Dockerfile writes Wolverine's generated handlers during the SDK build,
+When generated with `--Docker true`, the Dockerfile writes Wolverine's generated handlers during the SDK build,
 then publishes without `WolverineFx.RuntimeCompilation`, Roslyn workspaces, or EF design
 packages:
 
@@ -125,11 +126,44 @@ dotnet publish -c Release \
 Local builds retain runtime compilation by default. The Production commands above
 explicitly disable it after writing the generated Wolverine code.
 
+### Docker Compose
+
+With `--Docker true`, `docker-compose.yml` contains the API plus only the database you
+selected (PostgreSQL or SQL Server, with a named volume and health check; SQLite uses a
+volume for the database file). The API starts after the database reports healthy.
+
+```bash
+dotnet ef migrations add InitialCreate -o Data/Migrations
+docker compose up -d   # all settings come from .env; migrations apply on startup
+```
+
+> [!IMPORTANT]
+> - The database connection details live in two files: `.env` (used by the containers)
+>   and `appsettings.Development.json` (used by `dotnet ef` and `dotnet run` on the host).
+>   They match by default. If you change `POSTGRES_PASSWORD`/`MSSQL_SA_PASSWORD`,
+>   `POSTGRES_PORT`/`MSSQL_PORT`, or the database name in `.env`, update
+>   `appsettings.Development.json` too.
+> - The database volume keeps the password it was first created with. After changing
+>   the password in `.env`, recreate the volume. This deletes the database data:
+>
+>   ```bash
+>   docker compose down -v
+>   docker compose up -d
+>   ```
+
+`docker-compose.override.yml` is merged automatically for development. Use
+`docker compose -f docker-compose.yml up -d` for a production-like run.
+
 ## 8) Observability
 
 Generate with `--Observability OpenTelemetry`, set `OTEL_EXPORTER_OTLP_ENDPOINT`, and
 the service exports ASP.NET Core/runtime telemetry plus Wolverine's `Wolverine` activity
-source and `Wolverine*` meters.
+source and `Wolverine*` meters. Serilog log events are forwarded to OpenTelemetry, so logs
+are exported next to traces and metrics.
+
+With `--Docker true`, Compose also runs the Aspire Dashboard and sets
+`OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889` on the API. Open
+`http://localhost:18888` to browse traces, metrics, and logs.
 
 ## 9) Example Microchip API calls
 

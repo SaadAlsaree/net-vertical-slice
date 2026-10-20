@@ -22,6 +22,11 @@ builder.Services
 
 var app = builder.Build();
 
+if (!isCodeGeneration)
+{
+    await app.ApplyDatabaseMigrationsAsync();
+}
+
 app.UseApplicationPipeline();
 
 return await app.RunJasperFxCommands(args);

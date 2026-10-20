@@ -1,5 +1,11 @@
 # syntax=docker/dockerfile:1.7
 
+# Runtime base. Visual Studio Fast mode stops here and runs the app it built on the host.
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_HTTP_PORTS=8080
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 ARG APP_ENVIRONMENT=Production
@@ -38,23 +44,25 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
 
 RUN mkdir -p /app/logs
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM base AS final
 ARG APP_UID=1654
 ARG APP_ENVIRONMENT=Production
-WORKDIR /app
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y curl \
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 8080
 ENV ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT} \
     DOTNET_ENVIRONMENT=${APP_ENVIRONMENT} \
-    ASPNETCORE_HTTP_PORTS=8080 \
     DOTNET_gcServer=1
 
 COPY --from=build /app/publish .
 COPY --from=build --chown=${APP_UID}:${APP_UID} /app/logs ./Logs
+#if (DB_SQLITE)
+
+# Mount point for the SQLite database volume, writable by the non-root app user.
+RUN mkdir -p /app/data && chown ${APP_UID}:${APP_UID} /app/data
+#endif
 
 USER ${APP_UID}
 

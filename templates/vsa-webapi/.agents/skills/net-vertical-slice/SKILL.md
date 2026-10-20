@@ -69,6 +69,7 @@ dotnet new vsa-webapi -n MyApp
 | `-C` / `--CacheTool` | `OutputCache` | `OutputCache` or `None`                  |
 | `-Au` / `--AuthProvider` | `None` | `None`, `Keycloak`, or `Identity`               |
 | `--Observability` | `None` | `None` or `OpenTelemetry`                          |
+| `--Docker`        | `false` | `true` adds Dockerfile, Compose, `.env`           |
 
 #### Generated Structure
 
@@ -76,7 +77,11 @@ dotnet new vsa-webapi -n MyApp
 MyApp/
 ├── Program.cs                    # Minimal composition root
 ├── DependencyInjection/          # Messaging, data, auth, API, logging, telemetry
-├── Dockerfile                    # Wolverine codegen + production publish
+├── <Name>.slnx                   # single solution file
+├── Dockerfile                    # --Docker true: Wolverine codegen + production publish
+├── docker-compose.yml            # --Docker true: api + selected DB (+ aspire-dashboard with OTel)
+├── docker-compose.override.yml   # --Docker true: development overrides
+├── .env                          # --Docker true: single config source for Compose (git-ignored)
 ├── MyApp.csproj                  # NuGet packages pre-configured
 ├── appsettings.json / .Development.json
 ├── Data/

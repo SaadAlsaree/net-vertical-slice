@@ -4,7 +4,7 @@
     <EnableDefaultItems>false</EnableDefaultItems>
     <PackageType>Template</PackageType>
     <PackageId>NetVerticalSlice.Templates</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Title>Net Vertical Slice Templates</Title>
     <Authors>SaadAlsaree</Authors>
     <Company>SaadAlsaree</Company>
@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/SaadAlsaree/net-vertical-slice</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v2.0.0 release introducing Wolverine VSA Web API (.NET 10) and VSA Feature scaffolding templates.</PackageReleaseNotes>
+    <PackageReleaseNotes>v2.1.0 ships a single .slnx solution, an opt-in Docker / Docker Compose setup that adapts to the selected database, an Aspire Dashboard service wired to OpenTelemetry over OTLP, and central package pinning limited to the selected options.</PackageReleaseNotes>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <Content Include="vsa-webapi\**\*"
-             Exclude="vsa-webapi\bin\**;vsa-webapi\obj\**;vsa-webapi\.vs\**;vsa-webapi\**\bin\**;vsa-webapi\**\obj\**;vsa-webapi\SKILL.md;vsa-webapi\*.user" />
+             Exclude="vsa-webapi\bin\**;vsa-webapi\obj\**;vsa-webapi\.vs\**;vsa-webapi\**\bin\**;vsa-webapi\**\obj\**;vsa-webapi\SKILL.md;vsa-webapi\*.user;vsa-webapi\**\*.sln" />
     <Content Include="vsa-feature\**\*"
              Exclude="vsa-feature\bin\**;vsa-feature\obj\**;vsa-feature\**\bin\**;vsa-feature\**\obj\**" />
     <None Include="README.md" Pack="true" PackagePath="\" />

@@ -147,7 +147,7 @@
         "text": "Observability"
       },
       "description": {
-        "text": "Choose whether to export ASP.NET Core and Wolverine traces and metrics through OpenTelemetry."
+        "text": "Choose whether to export ASP.NET Core and Wolverine traces, metrics, and logs through OpenTelemetry."
       },
       "isVisible": true,
       "choices": [
@@ -166,10 +166,20 @@
             "text": "OpenTelemetry"
           },
           "description": {
-            "text": "Export traces and metrics through the OTLP protocol."
+            "text": "Export traces, metrics, and logs through the OTLP protocol."
           }
         }
       ]
+    },
+    {
+      "id": "Docker",
+      "name": {
+        "text": "Docker Compose"
+      },
+      "description": {
+        "text": "Generate a Dockerfile, docker-compose.yml with the selected database, and an Aspire Dashboard service when OpenTelemetry is selected."
+      },
+      "isVisible": true
     }
   ]
 }

@@ -9,3 +9,6 @@ Internal/Generated/
 *.user
 *.suo
 *.db
+*.sln
+# Local Docker configuration and secrets
+.env

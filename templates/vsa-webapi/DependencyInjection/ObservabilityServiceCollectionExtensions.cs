@@ -26,6 +26,7 @@ public static class ObservabilityServiceCollectionExtensions
                 .AddRuntimeInstrumentation()
                 .AddMeter("Microsoft.AspNetCore.RateLimiting")
                 .AddMeter("Wolverine*"))
+            .WithLogging()
             .UseOtlpExporter();
 #endif
 

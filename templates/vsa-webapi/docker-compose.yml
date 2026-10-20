@@ -1,0 +1,121 @@
+# All values come from .env (the single configuration file). A missing value stops
+# Compose with the message after ":?" instead of silently using a hidden default.
+name: vsa-compose-name
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?Set ASPNETCORE_ENVIRONMENT in .env}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:?Set BUILD_CONFIGURATION in .env}
+    image: vsa-compose-name-api:${APP_IMAGE_TAG:?Set APP_IMAGE_TAG in .env}
+    # Passes every .env entry to the container; Section__Key names override appsettings*.json.
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+    ports:
+      - "${APP_HTTP_PORT:?Set APP_HTTP_PORT in .env}:8080"
+    restart: unless-stopped
+#if (DOCKER_SQLITE)
+    volumes:
+      - sqlite-data:/app/data
+#endif
+#if (DOCKER_POSTGRES || DOCKER_SQLSERVER || DOCKER_ASPIRE)
+    depends_on:
+#endif
+#if (DOCKER_POSTGRES)
+      postgres:
+        condition: service_healthy
+        restart: true
+#endif
+#if (DOCKER_SQLSERVER)
+      sqlserver:
+        condition: service_healthy
+        restart: true
+#endif
+#if (DOCKER_ASPIRE)
+      aspire-dashboard:
+        condition: service_started
+#endif
+    networks:
+      - backend
+
+#if (DOCKER_POSTGRES)
+  postgres:
+    image: postgres:${POSTGRES_TAG:?Set POSTGRES_TAG in .env}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - backend
+
+#endif
+#if (DOCKER_SQLSERVER)
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:${MSSQL_TAG:?Set MSSQL_TAG in .env}
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:?Set MSSQL_PID in .env}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - backend
+
+#endif
+#if (DOCKER_ASPIRE)
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:${ASPIRE_DASHBOARD_TAG:?Set ASPIRE_DASHBOARD_TAG in .env}
+    environment:
+      # With ASPIRE_ALLOW_ANONYMOUS=false the UI asks for the browser token printed in the
+      # container log, and OTLP ingestion requires ASPIRE_OTLP_API_KEY.
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: ${ASPIRE_ALLOW_ANONYMOUS:?Set ASPIRE_ALLOW_ANONYMOUS in .env}
+      DASHBOARD__FRONTEND__AUTHMODE: BrowserToken
+      DASHBOARD__OTLP__AUTHMODE: ApiKey
+      DASHBOARD__OTLP__PRIMARYAPIKEY: ${ASPIRE_OTLP_API_KEY:?Set ASPIRE_OTLP_API_KEY in .env}
+    ports:
+      - "${ASPIRE_DASHBOARD_PORT:?Set ASPIRE_DASHBOARD_PORT in .env}:18888"
+      - "${ASPIRE_OTLP_PORT:?Set ASPIRE_OTLP_PORT in .env}:18889"
+    restart: unless-stopped
+    networks:
+      - backend
+
+#endif
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+#if (DOCKER_POSTGRES)
+  postgres-data:
+#endif
+#if (DOCKER_SQLSERVER)
+  sqlserver-data:
+#endif
+#if (DOCKER_SQLITE)
+  sqlite-data:
+#endif
