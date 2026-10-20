@@ -1,39 +1,72 @@
-# Net Vertical Slice Templates
+# Net Vertical Slice — .NET Starter Platform
 
-Production-oriented .NET templates for building ASP.NET Core Web APIs with
-Wolverine, Vertical Slice Architecture, Entity Framework Core, FluentValidation,
-and Mapster.
+[![NuGet](https://img.shields.io/nuget/v/NetVerticalSlice.Templates.svg)](https://www.nuget.org/packages/NetVerticalSlice.Templates/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/NetVerticalSlice.Templates.svg)](https://www.nuget.org/packages/NetVerticalSlice.Templates/)
+[![Template verification](https://github.com/SaadAlsaree/net-vertical-slice/actions/workflows/templates.yml/badge.svg)](https://github.com/SaadAlsaree/net-vertical-slice/actions/workflows/templates.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE)
 
-The package provides two coordinated templates:
+Start your next .NET 10 API with architecture, infrastructure, and
+production-minded defaults already working together.
 
-- `vsa-webapi`: creates a complete Web API with production infrastructure.
-- `vsa-feature`: adds a full vertical slice to an existing project.
+**Net Vertical Slice is an opinionated starter platform for building and evolving
+Wolverine-powered Vertical Slice APIs.** It is delivered through two coordinated
+`dotnet new` generators: one creates the application foundation, and the other keeps
+new business features aligned as the product grows.
 
-The generated application is ready to build immediately and keeps infrastructure,
-authentication, observability, and feature code separated from the composition root.
+Instead of spending the first stage of a project assembling messaging, validation,
+persistence, authentication, observability, API contracts, and deployment plumbing,
+you begin with a buildable foundation and own the generated source from day one.
 
-## Why use this template?
+> **Build the foundation once. Keep every feature aligned.**
+>
+> The platform is production-oriented, not production-complete. Every team must still
+> review authorization, secrets, migrations, proxy configuration, domain validation,
+> auditing, and operational policies for its deployment.
+
+## One platform, two coordinated generators
+
+| Generator | Role in the platform | Generates |
+|---|---|---|
+| `vsa-webapi` | Establish the foundation | A complete ASP.NET Core project with infrastructure, a sample feature, and selectable database, authentication, documentation, caching, and observability |
+| `vsa-feature` | Grow the application consistently | Create, GetById, GetList, Update, and SoftDelete slices, validators, endpoints, handlers, and Mapster configuration |
+
+Together, the generators provide a repeatable path from a new service to a growing
+application without introducing a second architectural style or recreating the same
+feature plumbing.
+
+## Why start with this platform?
+
+- **Move from setup to business code.** Start with Wolverine messaging, validation,
+  persistence, API contracts, mapping, and operational plumbing already integrated.
+- **Keep architecture consistent as the application grows.** Commands, queries,
+  endpoints, handlers, and validators stay close to the use case they implement.
+- **Own ordinary .NET source.** Generated applications remain readable and editable;
+  the starter platform is not a proprietary runtime your application must depend on.
+- **Choose only the infrastructure you need.** Database, authentication, API
+  documentation, caching, and observability providers are isolated by template options.
+- **Begin with an operational baseline.** Structured logging, health checks, rate
+  limiting, ProblemDetails, Docker, and static Wolverine code generation are included.
+
+## Platform capabilities
 
 | Area | Included capability |
 |---|---|
-| Architecture | Vertical Slice Architecture with command, query, handler, endpoint, and validator conventions |
-| Messaging | Wolverine CQRS, HTTP endpoints, middleware, and generated handler code |
-| Validation | FluentValidation executed before handler dispatch with ProblemDetails responses |
+| Architecture | Vertical Slice conventions for commands, queries, handlers, endpoints, and validators |
+| Messaging | Wolverine CQRS, HTTP endpoints, middleware, transactions, and generated handler code |
+| Validation | FluentValidation before handler dispatch with ProblemDetails responses |
 | Persistence | EF Core with PostgreSQL, SQL Server, or SQLite |
-| Data integrity | Audit fields, soft delete, optimistic concurrency, and entity configurations |
-| Authentication | Choose no authentication, Keycloak JWT, or ASP.NET Core Identity with local JWT |
-| Security | Per-user and per-IP rate limiting with stricter authentication policies |
-| API contracts | Standard `Response<T>`, typed `Error`, `Result<T>`, and paginated results |
-| Mapping | Mapster registration and projection conventions |
-| Documentation | Scalar or Swagger/OpenAPI |
+| Data model | Audit timestamps, soft-delete filtering, a concurrency token scaffold, and entity configurations |
+| Authentication | No authentication, Keycloak JWT, or ASP.NET Core Identity with local JWT |
+| Traffic protection | Global per-user/per-IP rate limiting and stricter Identity endpoint policies |
+| API contracts | `Response<T>`, typed `Error`, `Result<T>`, and paginated results |
+| Mapping | Mapster registration and query projection conventions |
+| API documentation | Scalar or Swagger/OpenAPI |
 | Caching | Optional ASP.NET Core output caching |
 | Observability | Optional OpenTelemetry traces, metrics, and logs through OTLP |
 | Logging | Structured Serilog configuration |
 | Operations | Liveness and readiness health endpoints |
-| Containers | Optional Dockerfile, Docker Compose with the selected database, and Aspire Dashboard |
-| Production | Multi-stage Docker build with pre-generated Wolverine code |
-| Developer experience | Central package management, Visual Studio options, sample feature, tests, and bundled AI guidance |
-
+| Production packaging | Multi-stage Docker build with pre-generated Wolverine code |
+| Developer experience | Central package management, Visual Studio/Rider options, sample feature, repository verification tests, and bundled AI guidance |
 ## Design principles
 
 - Feature code is organized by business use case, not by technical layer.
@@ -50,7 +83,21 @@ authentication, observability, and feature code separated from the composition r
 
 - .NET 10 SDK
 
-## Install
+## What's new in 2.0
+
+Version 2.0 is the major .NET 10 and Wolverine 6 starter-platform release:
+
+- A complete `vsa-webapi` project template and coordinated `vsa-feature` item template.
+- Selectable PostgreSQL, SQL Server, or SQLite persistence.
+- Isolated None, Keycloak, and Identity authentication outputs.
+- Optional OpenTelemetry and output caching.
+- Static Wolverine production code generation verified by the repository test harness.
+
+Installing a newer template version affects newly generated output; it does not
+rewrite existing applications. For an existing 1.x-generated project, compare the
+new template output and adopt changes intentionally.
+
+## Quick start
 
 ```bash
 dotnet new install NetVerticalSlice.Templates
@@ -62,20 +109,16 @@ List the installed templates:
 dotnet new list vsa
 ```
 
-## Create a Web API
+### Create a Web API
 
 ```bash
 dotnet new vsa-webapi \
   -n Store.Api \
-  -D PostgreSQL \
-  -A Scalar \
-  -C OutputCache \
-  -Au Identity \
-  --Observability OpenTelemetry \
-  --Docker true
+  -D Sqlite \
+  -Au None
 ```
 
-Then run:
+This fastest local path uses SQLite and no authentication. Then run:
 
 ```bash
 cd Store.Api
@@ -91,7 +134,6 @@ For Scalar, open `/scalar/v1`. For Swagger, open `/swagger`.
 
 | Option | Short name | Default | Choices |
 |---|:---:|---|---|
-| `--Framework` | `-F` | `net10.0` | `net10.0` |
 | `--DbProvider` | `-D` | `PostgreSQL` | `PostgreSQL`, `SqlServer`, `Sqlite` |
 | `--ApiDocsTool` | `-A` | `Scalar` | `Scalar`, `Swagger` |
 | `--CacheTool` | `-C` | `OutputCache` | `OutputCache`, `None` |
@@ -102,9 +144,7 @@ For Scalar, open `/scalar/v1`. For Swagger, open `/swagger`.
 These choices are also available in the Visual Studio and Rider new-project
 experience.
 
-Every option is applied at generation time: files, packages, `DefineConstants`,
-and configuration sections for options you did not select are not emitted. The
-project ships a single `<Name>.slnx` solution file.
+![Visual Studio project template wizard](https://raw.githubusercontent.com/SaadAlsaree/net-vertical-slice/main/image/vsa-wizard.png)
 
 ### Authentication choices
 
@@ -121,11 +161,24 @@ Identity projects include:
 - `POST /api/auth/refresh`
 - `POST /api/auth/logout`
 
+> **Authentication is not authorization.** Selecting Identity or Keycloak configures
+> token authentication, but generated business endpoints are not automatically
+> protected. Add `[Authorize]`, fallback policies, roles, or claims according to
+> your application requirements.
+
+For Identity deployments, configure the JWT secret outside source control, decide
+whether email confirmation is required, seed any roles your application expects
+(such as `User`), and verify role-assignment failures instead of ignoring them.
+
 ### Database choices
 
 The selected database provider controls the EF Core package, compile symbol, and
 generated connection strings. The application uses `DbContextPool`, configuration
 classes, audit interception, and a global soft-delete filter.
+
+`BaseEntity.RowVersion` provides a concurrency-token scaffold. If your API requires
+end-to-end optimistic concurrency, carry the token through update contracts and map
+`DbUpdateConcurrencyException` to an intentional response such as HTTP 409.
 
 ### Rate limiting
 
@@ -253,7 +306,7 @@ Store.Api/
 │   ├── ApplicationServiceCollectionExtensions.cs
 │   ├── AuthenticationServiceCollectionExtensions.cs
 │   ├── InfrastructureServiceCollectionExtensions.cs
-│   ├── MessagingHostBuilderExtensions.cs
+│   ├── LoggingHostBuilderExtensions.cs
 │   ├── ObservabilityServiceCollectionExtensions.cs
 │   ├── RateLimitingServiceCollectionExtensions.cs
 │   └── WebApplicationExtensions.cs
@@ -341,6 +394,27 @@ Generated commands and view models are field-agnostic. Replace the marked
 `TODO` fields with properties that match the target domain, register the `DbSet`,
 and create a migration.
 
+## Production checklist
+
+Before deploying a generated application:
+
+- Store database credentials, JWT secrets, and provider settings in environment
+  variables or a secrets manager.
+- Add authorization policies to protected business endpoints; authentication alone
+  does not make them private.
+- For Identity, seed required roles, decide on email-confirmation and lockout
+  policies, and review refresh-token storage and retention.
+- Create, review, and apply EF Core migrations through your deployment process.
+- Configure trusted forwarded headers when running behind a reverse proxy or load
+  balancer. IP-based rate limiting depends on the resolved remote address.
+- Review CORS origins, rate limits, log retention, and health-check dependencies for
+  the target environment.
+- Configure an OTLP collector when OpenTelemetry is enabled.
+- Complete user-aware audit fields and end-to-end concurrency handling if the domain
+  requires them.
+- Add application-specific unit and integration tests around authorization, data
+  access, and critical workflows.
+
 ## Production build
 
 The Dockerfile generated by `--Docker true` writes Wolverine handlers during the SDK stage and
@@ -376,11 +450,15 @@ dotnet publish \
 
 Health endpoints are anonymous and excluded from rate limiting.
 
-## Template verification
+## Repository verification tests
 
-The repository includes automated tests that generate projects for every database
-and authentication choice, build them, publish them with pre-generated Wolverine
-code, and verify runtime validation and rate-limiting behavior.
+The repository includes automated tests that generate projects across database and
+authentication choices, build them, publish them with pre-generated Wolverine code,
+and verify runtime validation and rate-limiting behavior.
+
+These tests verify the templates themselves. A generated application does not
+currently include a consumer test project; add tests that reflect your domain and
+deployment requirements.
 
 ```bash
 dotnet test templates/TemplateTests/TemplateTests.csproj --configuration Release
@@ -392,24 +470,30 @@ Create a NuGet package:
 dotnet pack templates/NetVerticalSlice.Templates.csproj --configuration Release
 ```
 
+## NuGet package semantics
+
+NuGet reports no package dependencies because this is a content-only template
+package. Applications generated by `vsa-webapi` do have framework and library
+dependencies, pinned centrally in the generated `Directory.Packages.props`.
+
 ## Uninstall
 
 ```bash
 dotnet new uninstall NetVerticalSlice.Templates
 ```
 
-## Additional documentation
+## Documentation and support
 
-The repository contains:
+- [End-to-end usage examples](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/docs/examples.md)
+- [Contribution and verification workflow](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/CONTRIBUTING.md)
+- [Security policy and private reporting](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/SECURITY.md)
+- [Short project roadmap](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/ROADMAP.md)
+- [Architecture and AI-assisted coding conventions](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/SKILL.md)
+- [Report a bug or request a feature](https://github.com/SaadAlsaree/net-vertical-slice/issues)
 
-- `docs/examples.md`: end-to-end usage examples.
-- `docs/CONTRIBUTING.md`: contribution and verification workflow.
-- `docs/IMPROVEMENTS.md`: planned improvements.
-- `SKILL.md`: detailed architecture and coding conventions for AI-assisted development.
-
-Generated projects also include the reusable skill under
+Generated projects also include the reusable guidance under
 `.agents/skills/net-vertical-slice/`.
 
 ## License
 
-MIT
+[MIT](https://github.com/SaadAlsaree/net-vertical-slice/blob/main/LICENSE)
