@@ -38,16 +38,13 @@
     <DefineConstants>$(DefineConstants);CACHE_OUTPUT</DefineConstants>
   </PropertyGroup>
 
+  <!-- Keep one comparison per condition: dotnet new only evaluates the first arm of an Or. -->
   <PropertyGroup Condition="'$(AuthProvider)' == 'Keycloak'">
-    <DefineConstants>$(DefineConstants);AUTH_KEYCLOAK</DefineConstants>
+    <DefineConstants>$(DefineConstants);AUTH_KEYCLOAK;AUTH_ENABLED</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(AuthProvider)' == 'Identity'">
-    <DefineConstants>$(DefineConstants);AUTH_IDENTITY</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(AuthProvider)' == 'Keycloak' Or '$(AuthProvider)' == 'Identity'">
-    <DefineConstants>$(DefineConstants);AUTH_ENABLED</DefineConstants>
+    <DefineConstants>$(DefineConstants);AUTH_IDENTITY;AUTH_ENABLED</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Observability)' == 'OpenTelemetry'">
@@ -125,5 +122,25 @@
   <ItemGroup>
     <Compile Update="Internal\Generated\**\*.cs" Watch="false" />
   </ItemGroup>
+
+  <!--#if (DOCKER_ENABLED) -->
+  <!-- Visual Studio Container Tools: links this project to the "api" Compose service. -->
+  <PropertyGroup>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerComposeProjectPath>docker-compose\docker-compose.dcproj</DockerComposeProjectPath>
+    <!-- The compose project has its own folder (and bin/obj); keep it out of this project. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);docker-compose\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+  </ItemGroup>
+
+  <!-- Compose files belong to docker-compose.dcproj, not to the web project. -->
+  <ItemGroup>
+    <None Remove="docker-compose.yml;docker-compose.override.yml;.env;template.env;.dockerignore" />
+  </ItemGroup>
+  <!--#endif -->
 
 </Project>

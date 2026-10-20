@@ -1,0 +1,19 @@
+# Local development additions, merged automatically by `docker compose up` and Visual Studio.
+# It only publishes the database port to the host (for EF Core migrations and database
+# tools); all values still come from .env. Production runs use only the base file:
+#   docker compose -f docker-compose.yml up -d
+#if (DOCKER_POSTGRES)
+services:
+  postgres:
+    ports:
+      - "${POSTGRES_PORT:?Set POSTGRES_PORT in .env}:5432"
+#endif
+#if (DOCKER_SQLSERVER)
+services:
+  sqlserver:
+    ports:
+      - "${MSSQL_PORT:?Set MSSQL_PORT in .env}:1433"
+#endif
+#if (DOCKER_SQLITE)
+services: {}
+#endif

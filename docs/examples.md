@@ -13,6 +13,7 @@ End-to-end examples for the `vsa-webapi` and `vsa-feature` templates. Every code
 5. [Example 5 — Calling the API (cURL / HTTP)](#example-5--calling-the-api-curl--http)
 6. [Example 6 — Authentication with Keycloak](#example-6--authentication-with-keycloak)
 7. [Example 7 — SQLite quick-prototype (no server)](#example-7--sqlite-quick-prototype-no-server)
+8. [Example 8 — Docker Compose with Aspire Dashboard](#example-8--docker-compose-with-aspire-dashboard)
 
 ---
 
@@ -399,6 +400,47 @@ dotnet run
 ```
 
 The generated connection string for SQLite is simply `Data Source=vsatemplate.db` (or `vsatemplate_dev.db` in Development). The DB file appears in the project root after `database update`.
+
+---
+
+## Example 8 — Docker Compose with Aspire Dashboard
+
+Generate the API with containers and OpenTelemetry enabled:
+
+```bash
+dotnet new vsa-webapi -n Shop.Api -D PostgreSQL -A Scalar -Au None \
+  --Observability OpenTelemetry --Docker true
+cd Shop.Api
+```
+
+The project now contains `Dockerfile`, `docker-compose.yml`,
+`docker-compose.override.yml`, and `.env`. Compose declares exactly three
+services: `api`, `postgres`, and `aspire-dashboard`. Picking `-D SqlServer` swaps
+`postgres` for `sqlserver`; `-D Sqlite` drops the database service and mounts a
+volume for the database file instead; leaving `--Observability None` drops
+`aspire-dashboard`.
+
+```bash
+# Every setting (passwords, connection string, JWT, OTEL) lives in .env
+docker compose up -d --build
+docker compose ps             # postgres reports "healthy" before api starts
+```
+
+Create the migration on the host; the API applies it to the `shop_api` database
+when it starts, because the generated `.env` sets `Database__MigrateOnStartup=true`:
+
+```bash
+dotnet ef migrations add InitialCreate -o Data/Migrations
+docker compose up -d --build
+```
+
+Then:
+
+- API: `http://localhost:8080/scalar/v1` and `http://localhost:8080/health/ready`
+- Aspire Dashboard: `http://localhost:18888` — traces, metrics, and structured
+  logs from the API, exported over OTLP to `aspire-dashboard:18889`
+
+Stop everything with `docker compose down` (add `-v` to delete the database volume).
 
 ---
 

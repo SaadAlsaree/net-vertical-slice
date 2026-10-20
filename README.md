@@ -27,9 +27,10 @@ authentication, observability, and feature code separated from the composition r
 | Mapping | Mapster registration and projection conventions |
 | Documentation | Scalar or Swagger/OpenAPI |
 | Caching | Optional ASP.NET Core output caching |
-| Observability | Optional OpenTelemetry traces and metrics through OTLP |
+| Observability | Optional OpenTelemetry traces, metrics, and logs through OTLP |
 | Logging | Structured Serilog configuration |
 | Operations | Liveness and readiness health endpoints |
+| Containers | Optional Dockerfile, Docker Compose with the selected database, and Aspire Dashboard |
 | Production | Multi-stage Docker build with pre-generated Wolverine code |
 | Developer experience | Central package management, Visual Studio options, sample feature, tests, and bundled AI guidance |
 
@@ -70,7 +71,8 @@ dotnet new vsa-webapi \
   -A Scalar \
   -C OutputCache \
   -Au Identity \
-  --Observability OpenTelemetry
+  --Observability OpenTelemetry \
+  --Docker true
 ```
 
 Then run:
@@ -95,9 +97,14 @@ For Scalar, open `/scalar/v1`. For Swagger, open `/swagger`.
 | `--CacheTool` | `-C` | `OutputCache` | `OutputCache`, `None` |
 | `--AuthProvider` | `-Au` | `None` | `None`, `Keycloak`, `Identity` |
 | `--Observability` | — | `None` | `None`, `OpenTelemetry` |
+| `--Docker` | — | `false` | `true`, `false` |
 
 These choices are also available in the Visual Studio and Rider new-project
 experience.
+
+Every option is applied at generation time: files, packages, `DefineConstants`,
+and configuration sections for options you did not select are not emitted. The
+project ships a single `<Name>.slnx` solution file.
 
 ### Authentication choices
 
@@ -144,6 +151,8 @@ When `--Observability OpenTelemetry` is selected, the project includes:
 - .NET runtime metrics.
 - Wolverine activity and meter sources.
 - ASP.NET Core rate-limiting metrics.
+- Serilog log events forwarded to the OpenTelemetry logger provider, so logs are
+  exported next to traces and metrics.
 - OTLP export configured through standard OpenTelemetry environment variables.
 
 Set the collector endpoint before running:
@@ -151,6 +160,89 @@ Set the collector endpoint before running:
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 ```
+
+### Docker Compose
+
+`--Docker true` generates `Dockerfile`, `.dockerignore`, `docker-compose.yml`,
+`docker-compose.override.yml`, and `.env`. Compose only contains the services
+you selected:
+
+| Selection | Services |
+|---|---|
+| `-D PostgreSQL` | `api`, `postgres` (named volume, `pg_isready` health check) |
+| `-D SqlServer` | `api`, `sqlserver` (named volume, `sqlcmd` health check) |
+| `-D Sqlite` | `api` with a named volume for the database file |
+| `--Observability OpenTelemetry` | adds `aspire-dashboard` |
+
+The API waits for the database to report healthy and every service restarts with
+`unless-stopped`.
+
+`.env` is the single place for container configuration. Compose reads it to fill
+the `${...}` values in the Compose files and passes every entry to the `api`
+container, where `Section__Key` names override `appsettings*.json`: for example
+`ConnectionStrings__DefaultConnection`, `Jwt__SecretKey`, `Keycloak__Realm`, and the
+`OTEL_*` exporter settings. The Compose files contain no values or fallbacks of their
+own; a missing entry stops Compose with a message naming it. The generated `.env`
+holds development values only, lists only what your selections need, and is excluded
+from git and from the Docker build context.
+
+```bash
+dotnet ef migrations add InitialCreate -o Data/Migrations
+docker compose up -d
+```
+
+With `Database__MigrateOnStartup=true` (set in the generated `.env`), the API applies
+pending EF Core migrations to the Compose database when it starts, so
+`dotnet ef database update` is not needed. With `--Docker true`,
+`appsettings.Development.json` also points at that database through the published
+port, so EF tools and `dotnet run` on the host use the same database as the
+container.
+
+> [!IMPORTANT]
+> - The database connection details live in two files: `.env` (used by the containers)
+>   and `appsettings.Development.json` (used by `dotnet ef` and `dotnet run` on the host).
+>   They match by default. If you change `POSTGRES_PASSWORD`/`MSSQL_SA_PASSWORD`,
+>   `POSTGRES_PORT`/`MSSQL_PORT`, or the database name in `.env`, update
+>   `appsettings.Development.json` too.
+> - The database volume keeps the password it was first created with. After changing
+>   the password in `.env`, recreate the volume. This deletes the database data:
+>
+>   ```bash
+>   docker compose down -v
+>   docker compose up -d
+>   ```
+
+`docker compose up` merges `docker-compose.override.yml`, which publishes the
+database port to the host for EF Core migrations and database tools. For a
+production-like run, use only the base file with a server-side `.env`:
+
+```bash
+docker compose -f docker-compose.yml up -d
+```
+
+In Visual Studio, the solution contains a separate `docker-compose` project
+(`docker-compose/docker-compose.dcproj`) that groups `docker-compose.yml`, its
+override, `.dockerignore`, `.env`, and the Compose `launchSettings.json`. It
+lives in its own folder so it never shares `bin/` and `obj/` with the web project. Set it as
+the startup project and press F5: the database and dashboard start first and the
+debugger attaches to `api`, using the values in `.env`.
+
+### Aspire Dashboard
+
+With `--Docker true --Observability OpenTelemetry`, Compose adds the standalone
+Aspire Dashboard (`mcr.microsoft.com/dotnet/aspire-dashboard`) and points the API at it:
+
+```text
+OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+OTEL_SERVICE_NAME=<project name>
+```
+
+Open `http://localhost:18888` to browse traces, metrics, and structured logs.
+In development the override file sets `DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true`.
+The base file requires the browser token printed in the dashboard container log
+and an OTLP API key (`ASPIRE_OTLP_API_KEY` in `.env`), which the API sends
+through `OTEL_EXPORTER_OTLP_HEADERS`.
 
 ## Generated architecture
 
@@ -178,9 +270,13 @@ Store.Api/
 ├── Mappings/
 ├── Models/
 ├── Program.cs
-├── Dockerfile
 ├── Directory.Packages.props
-└── appsettings.json
+├── appsettings.json
+├── Store.Api.slnx
+├── Dockerfile                      # --Docker true
+├── docker-compose.yml              # --Docker true
+├── docker-compose.override.yml     # --Docker true
+└── .env                            # --Docker true (git-ignored)
 ```
 
 The request flow is:
@@ -247,7 +343,7 @@ and create a migration.
 
 ## Production build
 
-The generated Dockerfile writes Wolverine handlers during the SDK stage and
+The Dockerfile generated by `--Docker true` writes Wolverine handlers during the SDK stage and
 publishes without runtime compilation, Roslyn workspaces, or EF design-time
 packages.
 

@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+//#if (DOCKER_POSTGRES)
+        "postgres": "StartWithoutDebugging",
+//#endif
+//#if (DOCKER_SQLSERVER)
+        "sqlserver": "StartWithoutDebugging",
+//#endif
+//#if (DOCKER_ASPIRE)
+        "aspire-dashboard": "StartWithoutDebugging",
+//#endif
+        "api": "StartDebugging"
+      }
+    }
+  }
+}

@@ -73,11 +73,21 @@
       "datatype": "choice",
       "choices": [
         { "choice": "None", "description": "No telemetry exporter" },
-        { "choice": "OpenTelemetry", "description": "OpenTelemetry traces and metrics through OTLP" }
+        { "choice": "OpenTelemetry", "description": "OpenTelemetry traces, metrics, and logs through OTLP" }
       ],
       "defaultValue": "None",
       "description": "Application observability",
       "replaces": "__OBSERVABILITY__"
+    },
+    "Docker": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Generate Dockerfile, Docker Compose, and a .env configuration file for containerized development"
+    },
+    "DB_POSTGRESQL": {
+      "type": "computed",
+      "value": "(DbProvider == \"PostgreSQL\")"
     },
     "DB_SQLSERVER": {
       "type": "computed",
@@ -114,6 +124,54 @@
     "OTEL_ENABLED": {
       "type": "computed",
       "value": "(Observability == \"OpenTelemetry\")"
+    },
+    "DOCKER_ENABLED": {
+      "type": "computed",
+      "value": "(Docker)"
+    },
+    "DOCKER_POSTGRES": {
+      "type": "computed",
+      "value": "(Docker && DbProvider == \"PostgreSQL\")"
+    },
+    "DOCKER_SQLSERVER": {
+      "type": "computed",
+      "value": "(Docker && DbProvider == \"SqlServer\")"
+    },
+    "DOCKER_SQLITE": {
+      "type": "computed",
+      "value": "(Docker && DbProvider == \"Sqlite\")"
+    },
+    "DOCKER_ASPIRE": {
+      "type": "computed",
+      "value": "(Docker && Observability == \"OpenTelemetry\")"
+    },
+    "ProjectFileName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "csprojFileName",
+      "replaces": "VsaTemplate.csproj"
+    },
+    "AssemblyFileName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "dllFileName",
+      "replaces": "VsaTemplate.dll"
+    },
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "HostIdentifier"
+    },
+    "ComposeProjectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "composeName",
+      "replaces": "vsa-compose-name"
+    },
+    "ComposeDatabaseName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "databaseName",
+      "replaces": "vsa_compose_db"
     },
     "ApiDocsLaunchUrl": {
       "type": "generated",
@@ -192,11 +250,120 @@
       }
     }
   },
+  "specialCustomOperations": {
+    "**/docker-compose*.yml": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif", "#elif" ],
+            "endif": [ "#endif" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        }
+      ]
+    },
+    "**/template.env": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif", "#elif" ],
+            "endif": [ "#endif" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        }
+      ]
+    },
+    "**/*.slnx": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "<!--#if" ],
+            "else": [ "<!--#else" ],
+            "elseif": [ "<!--#elseif", "<!--#elif" ],
+            "endif": [ "<!--#endif" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        }
+      ]
+    },
+    "**/Dockerfile": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif", "#elif" ],
+            "endif": [ "#endif" ],
+            "trim": "true",
+            "wholeLine": "true",
+            "evaluator": "C++"
+          }
+        }
+      ]
+    }
+  },
+  "forms": {
+    "lowerInvariant": {
+      "identifier": "lowerCaseInvariant"
+    },
+    "nonAlphanumericToDash": {
+      "identifier": "replace",
+      "pattern": "[^a-z0-9]+",
+      "replacement": "-"
+    },
+    "nonAlphanumericToUnderscore": {
+      "identifier": "replace",
+      "pattern": "[^a-z0-9]+",
+      "replacement": "_"
+    },
+    "csprojFileName": {
+      "identifier": "replace",
+      "pattern": "^(.*)$",
+      "replacement": "$1.csproj"
+    },
+    "dllFileName": {
+      "identifier": "replace",
+      "pattern": "^(.*)$",
+      "replacement": "$1.dll"
+    },
+    "composeName": {
+      "identifier": "chain",
+      "steps": [ "lowerInvariant", "nonAlphanumericToDash" ]
+    },
+    "databaseName": {
+      "identifier": "chain",
+      "steps": [ "lowerInvariant", "nonAlphanumericToUnderscore" ]
+    }
+  },
+  "guids": [
+    "6F0C2D7A-3B4E-4C1A-9E58-2A7B1D4C8E90"
+  ],
   "primaryOutputs": [
-    { "path": "VsaTemplate.csproj" }
+    { "path": "VsaTemplate.csproj" },
+    {
+      "condition": "(DOCKER_ENABLED)",
+      "path": "docker-compose/docker-compose.dcproj"
+    }
   ],
   "sources": [
     {
+      "rename": {
+        "template.env": ".env"
+      },
       "modifiers": [
         {
           "condition": "(!AUTH_ENABLED)",
@@ -204,6 +371,23 @@
             "Extensions/AuthClaims.cs",
             "Extensions/CurrentUserExtensions.cs",
             "Models/CurrentUser.cs"
+          ]
+        },
+        {
+          "condition": "(HostIdentifier == \"vs\")",
+          "exclude": [
+            "VsaTemplate.slnx"
+          ]
+        },
+        {
+          "condition": "(!DOCKER_ENABLED)",
+          "exclude": [
+            "Dockerfile",
+            ".dockerignore",
+            "docker-compose.yml",
+            "docker-compose.override.yml",
+            "docker-compose/**",
+            "template.env"
           ]
         },
         {

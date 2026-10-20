@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="VsaTemplate.csproj" />
+  <!--#if (DOCKER_ENABLED) -->
+  <Project Path="docker-compose/docker-compose.dcproj" />
+  <!--#endif -->
+</Solution>

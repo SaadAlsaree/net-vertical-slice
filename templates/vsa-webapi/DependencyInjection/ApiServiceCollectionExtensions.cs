@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 #if CACHE_OUTPUT
 using Microsoft.AspNetCore.OutputCaching;
 #endif
-#if APIDOCS_SCALAR
+#if AUTH_ENABLED
 using Microsoft.OpenApi;
 #endif
 using VsaTemplate.Extensions;
@@ -26,31 +26,20 @@ public static class ApiServiceCollectionExtensions
 #if AUTH_ENABLED
             options.AddSecurityDefinition(
                 "Bearer",
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme.",
                     Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT"
                 });
 
-            options.AddSecurityRequirement(
-                new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-                {
-                    {
-                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                        {
-                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                            {
-                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+            });
 #endif
         });
 #elif APIDOCS_SCALAR
